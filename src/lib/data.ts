@@ -1,0 +1,89 @@
+import { MinecraftContent } from './types';
+
+// Пример данных для демонстрации
+export const SAMPLE_CONTENT: MinecraftContent[] = [
+  {
+    id: '1',
+    title: 'OptiFine',
+    description: 'Оптимизирует Minecraft, повышает FPS и добавляет поддержку HD-текстур',
+    type: 'mod',
+    author: 'sp614x',
+    downloadCount: 10542367,
+    createdAt: '2022-03-15',
+    updatedAt: '2023-09-21',
+    imageUrl: '/placeholder.svg',
+    downloadUrl: '#',
+    minecraftVersions: ['1.19.4', '1.19.3', '1.19.2', '1.18.2'],
+    fileSize: '5.2 МБ'
+  },
+  {
+    id: '2',
+    title: 'Faithful 32x',
+    description: 'Улучшенные текстуры Minecraft с сохранением оригинального стиля',
+    type: 'resource-pack',
+    author: 'Faithful Team',
+    downloadCount: 7854291,
+    createdAt: '2022-04-10',
+    updatedAt: '2023-10-05',
+    imageUrl: '/placeholder.svg',
+    downloadUrl: '#',
+    minecraftVersions: ['1.20.1', '1.19.4', '1.19.3', '1.18.2'],
+    fileSize: '128 МБ'
+  },
+  {
+    id: '3',
+    title: 'BSL Shaders',
+    description: 'Реалистичные шейдеры с красивым освещением и эффектами',
+    type: 'shader',
+    author: 'CaptTatsu',
+    downloadCount: 5209431,
+    createdAt: '2022-01-22',
+    updatedAt: '2023-11-17',
+    imageUrl: '/placeholder.svg',
+    downloadUrl: '#',
+    minecraftVersions: ['1.20.1', '1.19.4', '1.18.2'],
+    fileSize: '2.4 МБ'
+  },
+  {
+    id: '4',
+    title: 'Структуры Фэнтези',
+    description: 'Дата-пак добавляющий магические структуры в мир',
+    type: 'data-pack',
+    author: 'MagicBuilder',
+    downloadCount: 2451928,
+    createdAt: '2022-07-11',
+    updatedAt: '2023-08-29',
+    imageUrl: '/placeholder.svg',
+    downloadUrl: '#',
+    minecraftVersions: ['1.20.1', '1.19.4'],
+    fileSize: '1.8 МБ'
+  },
+  {
+    id: '5',
+    title: 'Скин Эндермена',
+    description: 'Стильный скин Эндермена в костюме',
+    type: 'skin',
+    author: 'CrafterGirl',
+    downloadCount: 389217,
+    createdAt: '2023-01-05',
+    updatedAt: '2023-01-05',
+    imageUrl: '/placeholder.svg',
+    downloadUrl: '#',
+    minecraftVersions: ['Все версии'],
+    fileSize: '12 КБ'
+  },
+  {
+    id: '6',
+    title: 'RLCraft',
+    description: 'Хардкорная сборка модов с элементами выживания и RPG',
+    type: 'modpack',
+    author: 'Shivaxi',
+    downloadCount: 8921547,
+    createdAt: '2021-09-15',
+    updatedAt: '2023-06-10',
+    imageUrl: '/placeholder.svg',
+    downloadUrl: '#',
+    minecraftVersions: ['1.12.2'],
+    fileSize: '285 МБ'
+  }
+];
