@@ -8,6 +8,15 @@ export type ContentType =
   | 'shader-pack'
   | 'resource-pack-collection';
 
+export type VideoType = 'youtube' | 'direct';
+
+export interface VideoContent {
+  type: VideoType;
+  url: string;
+  title?: string;
+  thumbnail?: string;
+}
+
 export interface MinecraftContent {
   id: string;
   title: string;
@@ -21,6 +30,7 @@ export interface MinecraftContent {
   downloadUrl: string;
   minecraftVersions: string[];
   fileSize: string;
+  videos?: VideoContent[];
 }
 
 export const CONTENT_TYPE_LABELS: Record<ContentType, string> = {

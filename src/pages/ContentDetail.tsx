@@ -1,44 +1,35 @@
-import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { SAMPLE_CONTENT } from "@/lib/data";
+import { Download, User, Calendar, FileType, Tag } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SAMPLE_CONTENT } from "@/lib/data";
-import { MinecraftContent, CONTENT_TYPE_LABELS } from "@/lib/types";
-import { Download, Calendar, User, HardDrive, Clock } from "lucide-react";
-import ContentGrid from "@/components/ContentGrid";
+import { formatDistanceToNow } from "date-fns";
+import { ru } from "date-fns/locale";
+import { Separator } from "@/components/ui/separator";
+import VideoGallery from "@/components/VideoGallery";
 
 export default function ContentDetail() {
   const { id } = useParams<{ id: string }>();
-  const [content, setContent] = useState<MinecraftContent | null>(null);
-  const [relatedContent, setRelatedContent] = useState<MinecraftContent[]>([]);
   
-  useEffect(() => {
-    // В реальном приложении здесь был бы запрос к API
-    const foundContent = SAMPLE_CONTENT.find(item => item.id === id);
-    setContent(foundContent || null);
-    
-    if (foundContent) {
-      // Находим похожий контент того же типа
-      const related = SAMPLE_CONTENT
-        .filter(item => item.id !== id && item.type === foundContent.type)
-        .slice(0, 3);
-      setRelatedContent(related);
-    }
-  }, [id]);
+  // В реальном приложении здесь был бы API-запрос
+  const content = SAMPLE_CONTENT.find(item => item.id === id);
   
   if (!content) {
     return (
       <div className="flex flex-col min-h-screen">
         <Header />
-        <main className="container py-10 text-center">
-          <h1 className="text-2xl font-bold">Контент не найден</h1>
-          <p className="text-muted-foreground mt-2">
-            Запрашиваемый материал не существует или был удален
-          </p>
+        <main className="container py-12 flex-1">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold mb-4">Контент не найден</h1>
+            <p className="text-muted-foreground mb-6">
+              Запрашиваемый материал не существует или был удален
+            </p>
+            <Button asChild>
+              <a href="/">Вернуться на главную</a>
+            </Button>
+          </div>
         </main>
         <Footer />
       </div>
@@ -48,194 +39,97 @@ export default function ContentDetail() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="container py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Левая колонка с изображением */}
-          <div className="lg:col-span-1">
-            <Card>
-              <CardContent className="p-0">
+      <main className="container py-8 flex-1">
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="md:col-span-2 space-y-6">
+            <h1 className="text-3xl font-bold">{content.title}</h1>
+            
+            <div className="rounded-md overflow-hidden">
+              <AspectRatio ratio={16 / 9}>
                 <img 
-                  src={content.imageUrl} 
+                  src={content.imageUrl || "/placeholder.svg"} 
                   alt={content.title}
-                  className="w-full h-auto rounded-t-lg"
+                  className="object-cover w-full h-full"
                 />
-                <div className="p-4">
-                  <Button className="w-full mb-3">
-                    <Download className="mr-2 h-4 w-4" />
-                    Скачать
-                  </Button>
-                  
-                  <div className="space-y-4">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground flex items-center">
-                        <Download className="mr-2 h-4 w-4" />
-                        Загрузки:
-                      </span>
-                      <span className="font-medium">{content.downloadCount.toLocaleString('ru-RU')}</span>
-                    </div>
-                    
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground flex items-center">
-                        <User className="mr-2 h-4 w-4" />
-                        Автор:
-                      </span>
-                      <span className="font-medium">{content.author}</span>
-                    </div>
-                    
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground flex items-center">
-                        <HardDrive className="mr-2 h-4 w-4" />
-                        Размер:
-                      </span>
-                      <span className="font-medium">{content.fileSize}</span>
-                    </div>
-                    
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground flex items-center">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        Обновлено:
-                      </span>
-                      <span className="font-medium">{new Date(content.updatedAt).toLocaleDateString('ru-RU')}</span>
-                    </div>
-                    
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground flex items-center">
-                        <Clock className="mr-2 h-4 w-4" />
-                        Создано:
-                      </span>
-                      <span className="font-medium">{new Date(content.createdAt).toLocaleDateString('ru-RU')}</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          
-          {/* Правая колонка с информацией */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-2">
-              <Badge>{CONTENT_TYPE_LABELS[content.type]}</Badge>
-              {content.minecraftVersions.slice(0, 3).map((version) => (
-                <Badge key={version} variant="outline">
-                  {version}
-                </Badge>
-              ))}
-              {content.minecraftVersions.length > 3 && (
-                <Badge variant="outline">
-                  +{content.minecraftVersions.length - 3}
-                </Badge>
-              )}
+              </AspectRatio>
             </div>
             
-            <h1 className="text-3xl font-bold mb-4">{content.title}</h1>
+            {content.videos && content.videos.length > 0 && (
+              <VideoGallery videos={content.videos} />
+            )}
             
-            <Tabs defaultValue="description">
-              <TabsList>
-                <TabsTrigger value="description">Описание</TabsTrigger>
-                <TabsTrigger value="installation">Установка</TabsTrigger>
-                <TabsTrigger value="changelog">История изменений</TabsTrigger>
-              </TabsList>
+            <div className="prose max-w-none">
+              <h2>Описание</h2>
+              <p>{content.description}</p>
+            </div>
+          </div>
+          
+          <div className="space-y-6">
+            <div className="bg-card rounded-lg p-6 shadow-sm">
+              <Button className="w-full gap-2 mb-4" size="lg">
+                <Download className="h-5 w-5" />
+                Скачать
+              </Button>
               
-              <TabsContent value="description" className="pt-4">
-                <div className="space-y-4">
-                  <p>{content.description}</p>
-                  
-                  {/* Здесь может быть расширенное описание с картинками и т.д. */}
-                  <p>
-                    Это расширенное описание контента, которое включает в себя подробную информацию
-                    о функциональности, особенностях и преимуществах данного материала для Minecraft.
-                  </p>
-                  
-                  <h3 className="text-xl font-semibold mt-6">Особенности</h3>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li>Особенность 1 - описание функциональности</li>
-                    <li>Особенность 2 - описание функциональности</li>
-                    <li>Особенность 3 - описание функциональности</li>
-                    <li>Особенность 4 - описание функциональности</li>
-                  </ul>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="installation" className="pt-4">
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold">Инструкция по установке</h3>
-                  <ol className="list-decimal list-inside space-y-2">
-                    <li>Скачайте файл по кнопке "Скачать"</li>
-                    <li>Откройте папку .minecraft в вашей системе</li>
-                    <li>Переместите файл в соответствующую папку (mods, resourcepacks, и т.д.)</li>
-                    <li>Запустите Minecraft и наслаждайтесь!</li>
-                  </ol>
-                  
-                  <div className="p-4 bg-primary/10 rounded-md mt-4">
-                    <h4 className="font-medium">Требования</h4>
-                    <ul className="list-disc list-inside mt-2">
-                      <li>Minecraft {content.minecraftVersions[0]} или новее</li>
-                      <li>Forge/Fabric (для модов)</li>
-                      <li>4 ГБ оперативной памяти (рекомендуется)</li>
-                    </ul>
+              <div className="space-y-3">
+                <div className="flex items-start gap-2">
+                  <User className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                  <div>
+                    <div className="text-sm text-muted-foreground">Автор</div>
+                    <div>{content.author}</div>
                   </div>
                 </div>
-              </TabsContent>
-              
-              <TabsContent value="changelog" className="pt-4">
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold">История изменений</h3>
-                  
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="font-medium flex items-center">
-                        <span>Версия 1.2.0</span>
-                        <span className="text-sm text-muted-foreground ml-2">
-                          ({new Date(content.updatedAt).toLocaleDateString('ru-RU')})
-                        </span>
-                      </h4>
-                      <ul className="list-disc list-inside mt-2 space-y-1">
-                        <li>Добавлена новая функциональность</li>
-                        <li>Исправлены ошибки с совместимостью</li>
-                        <li>Улучшена производительность</li>
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-medium flex items-center">
-                        <span>Версия 1.1.0</span>
-                        <span className="text-sm text-muted-foreground ml-2">
-                          (15.06.2023)
-                        </span>
-                      </h4>
-                      <ul className="list-disc list-inside mt-2 space-y-1">
-                        <li>Добавлена поддержка Minecraft 1.19.4</li>
-                        <li>Улучшен пользовательский интерфейс</li>
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-medium flex items-center">
-                        <span>Версия 1.0.0</span>
-                        <span className="text-sm text-muted-foreground ml-2">
-                          ({new Date(content.createdAt).toLocaleDateString('ru-RU')})
-                        </span>
-                      </h4>
-                      <ul className="list-disc list-inside mt-2 space-y-1">
-                        <li>Первый релиз</li>
-                      </ul>
-                    </div>
+                
+                <div className="flex items-start gap-2">
+                  <Calendar className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                  <div>
+                    <div className="text-sm text-muted-foreground">Обновлено</div>
+                    <div>{formatDistanceToNow(new Date(content.updatedAt), { addSuffix: true, locale: ru })}</div>
                   </div>
                 </div>
-              </TabsContent>
-            </Tabs>
+                
+                <div className="flex items-start gap-2">
+                  <Download className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                  <div>
+                    <div className="text-sm text-muted-foreground">Загрузок</div>
+                    <div>{content.downloadCount.toLocaleString()}</div>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-2">
+                  <FileType className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                  <div>
+                    <div className="text-sm text-muted-foreground">Размер файла</div>
+                    <div>{content.fileSize}</div>
+                  </div>
+                </div>
+                
+                <Separator />
+                
+                <div>
+                  <div className="text-sm text-muted-foreground mb-2">Поддерживаемые версии</div>
+                  <div className="flex flex-wrap gap-2">
+                    {content.minecraftVersions.map(version => (
+                      <div key={version} className="bg-accent rounded-full px-3 py-1 text-xs">
+                        {version}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <Separator />
+                
+                <div>
+                  <div className="text-sm text-muted-foreground mb-2">Категория</div>
+                  <div className="flex items-center gap-1">
+                    <Tag className="h-4 w-4 text-muted-foreground" />
+                    <span>{content.type}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        
-        {/* Похожие материалы */}
-        {relatedContent.length > 0 && (
-          <div className="mt-12">
-            <ContentGrid
-              title="Похожие материалы"
-              items={relatedContent}
-            />
-          </div>
-        )}
       </main>
       <Footer />
     </div>

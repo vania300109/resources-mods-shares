@@ -4,10 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ContentType, CONTENT_TYPE_LABELS } from "@/lib/types";
+import { ContentType, CONTENT_TYPE_LABELS, VideoContent } from "@/lib/types";
 import { useState } from "react";
 import { Upload, X } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import VideoUploader from "@/components/VideoUploader";
 
 export default function UploadForm() {
   const [title, setTitle] = useState("");
@@ -16,6 +17,7 @@ export default function UploadForm() {
   const [file, setFile] = useState<File | null>(null);
   const [image, setImage] = useState<File | null>(null);
   const [minecraftVersions, setMinecraftVersions] = useState("");
+  const [videos, setVideos] = useState<VideoContent[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -46,6 +48,7 @@ export default function UploadForm() {
       setFile(null);
       setImage(null);
       setMinecraftVersions("");
+      setVideos([]);
       setIsUploading(false);
     }, 2000);
   };
@@ -204,6 +207,11 @@ export default function UploadForm() {
                 </>
               )}
             </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label>Видео</Label>
+            <VideoUploader videos={videos} onChange={setVideos} />
           </div>
         </CardContent>
         <CardFooter>
