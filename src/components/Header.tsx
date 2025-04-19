@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import MobileNav from "@/components/MobileNav";
 import ThemeToggle from "@/components/ThemeToggle";
-import { useMediaQuery } from "@/hooks/use-mobile";
+import useMediaQuery from "@/hooks/use-mobile";
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
