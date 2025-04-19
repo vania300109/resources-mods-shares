@@ -8,10 +8,10 @@ import { MinecraftContent, ContentType, CONTENT_TYPE_LABELS } from "@/lib/types"
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Cubes, Package, Database, User, Paintbrush, Box } from "lucide-react";
+import { Blocks, Package, Database, User, Paintbrush, Box } from "lucide-react";
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
-  'mods': <Cubes className="h-5 w-5" />,
+  'mods': <Blocks className="h-5 w-5" />,
   'resource-packs': <Package className="h-5 w-5" />,
   'datapacks': <Database className="h-5 w-5" />,
   'skins': <User className="h-5 w-5" />,

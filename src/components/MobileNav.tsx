@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
-import { Cubes, Package, Database, User, Paintbrush, Box } from "lucide-react";
+import { Blocks, Package, Database, User, Paintbrush, Box } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const navItems = [
   {
     title: "Моды",
     href: "/mods",
-    icon: <Cubes className="h-5 w-5" />,
+    icon: <Blocks className="h-5 w-5" />,
   },
   {
     title: "Ресурс-паки",
