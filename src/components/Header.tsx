@@ -1,74 +1,76 @@
-import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Search, Upload, Menu } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { MobileNav } from "./MobileNav";
+import MobileNav from "@/components/MobileNav";
+import ThemeToggle from "@/components/ThemeToggle";
+import { useMediaQuery } from "@/hooks/use-mobile";
 
 export default function Header() {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // В реальном приложении перенаправит на страницу поиска
+      navigate(`/?search=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+  
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="p-0">
-              <MobileNav />
-            </SheetContent>
-          </Sheet>
-          <Link to="/" className="flex items-center gap-2">
-            <img src="/logo-b.svg" alt="Логотип" className="h-8 w-8" />
-            <span className="text-xl font-bold">МайнКрафт Моды</span>
+        <div className="flex items-center gap-2 md:gap-6">
+          <Link to="/" className="flex items-center gap-2 font-bold text-xl">
+            <img src="/logo-b.svg" alt="Logo" className="h-6 w-6" />
+            <span className="hidden md:inline">Minecraft Hub</span>
           </Link>
-        </div>
-
-        {isSearchOpen ? (
-          <div className="flex-1 mx-4 max-w-md">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Искать моды, ресурс-паки, шейдеры..."
-                className="pl-8 w-full"
-                autoFocus
-                onBlur={() => setIsSearchOpen(false)}
-              />
-            </div>
-          </div>
-        ) : (
-          <nav className="hidden md:flex items-center gap-6 text-sm">
-            <Link to="/mods" className="hover:text-primary font-medium">Моды</Link>
-            <Link to="/resource-packs" className="hover:text-primary font-medium">Ресурс-паки</Link>
-            <Link to="/datapacks" className="hover:text-primary font-medium">Дата-паки</Link>
-            <Link to="/skins" className="hover:text-primary font-medium">Скины</Link>
-            <Link to="/shaders" className="hover:text-primary font-medium">Шейдеры</Link>
-            <Link to="/modpacks" className="hover:text-primary font-medium">Сборки</Link>
-          </nav>
-        )}
-
-        <div className="flex items-center gap-2">
-          {!isSearchOpen && (
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setIsSearchOpen(true)}
-            >
-              <Search className="h-5 w-5" />
-            </Button>
+          
+          {!isMobile && (
+            <nav className="hidden md:flex items-center gap-6">
+              <Link to="/" className="text-sm font-medium transition-colors hover:text-primary">
+                Главная
+              </Link>
+              <Link to="/category/mod" className="text-sm font-medium transition-colors hover:text-primary">
+                Моды
+              </Link>
+              <Link to="/category/resource-pack" className="text-sm font-medium transition-colors hover:text-primary">
+                Ресурс-паки
+              </Link>
+              <Link to="/category/shader" className="text-sm font-medium transition-colors hover:text-primary">
+                Шейдеры
+              </Link>
+              <Link to="/upload" className="text-sm font-medium transition-colors hover:text-primary">
+                Загрузить
+              </Link>
+            </nav>
           )}
-          <Link to="/upload">
-            <Button>
-              <Upload className="h-4 w-4 mr-2" />
-              Загрузить
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <form onSubmit={handleSearch} className="relative hidden md:block">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Поиск..."
+              className="w-44 lg:w-64 pl-8"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </form>
+          
+          <ThemeToggle />
+          
+          {!isMobile ? (
+            <Button asChild>
+              <Link to="/upload">Загрузить контент</Link>
             </Button>
-          </Link>
+          ) : (
+            <MobileNav />
+          )}
         </div>
       </div>
     </header>
