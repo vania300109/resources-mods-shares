@@ -85,5 +85,47 @@ export const SAMPLE_CONTENT: MinecraftContent[] = [
     downloadUrl: '#',
     minecraftVersions: ['1.12.2'],
     fileSize: '285 МБ'
+  },
+  {
+    id: '7',
+    title: 'Коллекция Шейдеров Сони',
+    description: 'Набор оптимизированных шейдеров для разных стилей игры',
+    type: 'shader-pack',
+    author: 'SonikShaders',
+    downloadCount: 3254196,
+    createdAt: '2022-11-05',
+    updatedAt: '2023-12-18',
+    imageUrl: '/placeholder.svg',
+    downloadUrl: '#',
+    minecraftVersions: ['1.20.1', '1.19.4', '1.18.2'],
+    fileSize: '16.7 МБ'
+  },
+  {
+    id: '8',
+    title: 'Ультра HD Коллекция',
+    description: 'Сборка высококачественных ресурс-паков для реалистичной графики',
+    type: 'resource-pack-collection',
+    author: 'RealisticTeam',
+    downloadCount: 2874532,
+    createdAt: '2022-08-12',
+    updatedAt: '2023-11-29',
+    imageUrl: '/placeholder.svg',
+    downloadUrl: '#',
+    minecraftVersions: ['1.20.1', '1.19.4'],
+    fileSize: '512 МБ'
+  },
+  {
+    id: '9',
+    title: 'Затерянный Город',
+    description: 'Огромная приключенческая карта с квестами и головоломками',
+    type: 'map',
+    author: 'MapMaster',
+    downloadCount: 4256198,
+    createdAt: '2022-10-18',
+    updatedAt: '2023-10-05',
+    imageUrl: '/placeholder.svg',
+    downloadUrl: '#',
+    minecraftVersions: ['1.20.1', '1.19.4', '1.18.2'],
+    fileSize: '45.3 МБ'
   }
 ];

@@ -6,7 +6,8 @@ export type ContentType =
   | 'shader'
   | 'modpack'
   | 'shader-pack'
-  | 'resource-pack-collection';
+  | 'resource-pack-collection'
+  | 'map';
 
 export type SortOption = 'newest' | 'popular';
 
@@ -43,7 +44,8 @@ export const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
   'shader': 'Шейдер',
   'modpack': 'Сборка модов',
   'shader-pack': 'Сборка шейдеров',
-  'resource-pack-collection': 'Сборка ресурс-паков'
+  'resource-pack-collection': 'Сборка ресурс-паков',
+  'map': 'Карта'
 };
 
 export const MINECRAFT_VERSIONS = [

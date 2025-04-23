@@ -8,7 +8,7 @@ import CategoryFilter from "@/components/CategoryFilter";
 import { SAMPLE_CONTENT } from "@/lib/data";
 import { MinecraftContent, ContentType, SortOption, CONTENT_TYPE_LABELS } from "@/lib/types";
 import { Input } from "@/components/ui/input";
-import { Blocks, Package, Database, User, Paintbrush, Box } from "lucide-react";
+import { Blocks, Package, Database, User, Paintbrush, Box, Map, Layers } from "lucide-react";
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   'mod': <Blocks className="h-5 w-5" />,
@@ -16,7 +16,10 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   'data-pack': <Database className="h-5 w-5" />,
   'skin': <User className="h-5 w-5" />,
   'shader': <Paintbrush className="h-5 w-5" />,
-  'modpack': <Box className="h-5 w-5" />
+  'modpack': <Box className="h-5 w-5" />,
+  'shader-pack': <Paintbrush className="h-5 w-5" />,
+  'resource-pack-collection': <Package className="h-5 w-5" />,
+  'map': <Map className="h-5 w-5" />
 };
 
 export default function CategoryPage() {

@@ -69,6 +69,9 @@ export default function CategoryFilter({
               <TabsTrigger value="resource-pack-collection" className="flex-grow my-1">
                 {CONTENT_TYPE_LABELS["resource-pack-collection"]}
               </TabsTrigger>
+              <TabsTrigger value="map" className="flex-grow my-1">
+                {CONTENT_TYPE_LABELS.map}
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
