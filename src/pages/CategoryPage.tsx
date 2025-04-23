@@ -1,142 +1,129 @@
-
-import { useState, useEffect } from "react";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { SAMPLE_CONTENT } from "@/lib/data";
+import { useState, useEffect } from "react";
+import { ContentType, SortOption } from "@/lib/types";
 import ContentGrid from "@/components/ContentGrid";
 import CategoryFilter from "@/components/CategoryFilter";
-import { SAMPLE_CONTENT } from "@/lib/data";
-import { MinecraftContent, ContentType, SortOption, CONTENT_TYPE_LABELS } from "@/lib/types";
-import { Input } from "@/components/ui/input";
-import { Blocks, Package, Database, User, Paintbrush, Box, Map, Layers } from "lucide-react";
+import { Bookmark, Code, Layers, Package, Palette, FileImage, Map, Box } from "lucide-react";
 
-const CATEGORY_ICONS: Record<string, React.ReactNode> = {
-  'mod': <Blocks className="h-5 w-5" />,
-  'resource-pack': <Package className="h-5 w-5" />,
-  'data-pack': <Database className="h-5 w-5" />,
-  'skin': <User className="h-5 w-5" />,
-  'shader': <Paintbrush className="h-5 w-5" />,
-  'modpack': <Box className="h-5 w-5" />,
-  'shader-pack': <Paintbrush className="h-5 w-5" />,
-  'resource-pack-collection': <Package className="h-5 w-5" />,
-  'map': <Map className="h-5 w-5" />
+// Словарь иконок для разных типов контента
+const CATEGORY_ICONS = {
+  'mod': <Code size={24} />,
+  'resource-pack': <Palette size={24} />,
+  'data-pack': <Layers size={24} />,
+  'skin': <FileImage size={24} />,
+  'shader': <Palette size={24} />,
+  'modpack': <Package size={24} />,
+  'shader-pack': <Package size={24} />,
+  'resource-pack-collection': <Box size={24} />,
+  'map': <Map size={24} />
+};
+
+// Названия категорий для заголовков
+const CATEGORY_TITLES: Record<ContentType, string> = {
+  'mod': 'Моды для Minecraft',
+  'resource-pack': 'Ресурс-паки для Minecraft',
+  'data-pack': 'Дата-паки для Minecraft',
+  'skin': 'Скины для Minecraft',
+  'shader': 'Шейдеры для Minecraft',
+  'modpack': 'Сборки модов для Minecraft',
+  'shader-pack': 'Сборки шейдеров для Minecraft',
+  'resource-pack-collection': 'Сборки ресурс-паков для Minecraft',
+  'map': 'Карты для Minecraft'
 };
 
 export default function CategoryPage() {
   const { category } = useParams<{ category: string }>();
   const location = useLocation();
-  const navigate = useNavigate();
+  const categoryFromPath = location.pathname.split('/').pop() as ContentType | undefined;
   
-  const [content, setContent] = useState<MinecraftContent[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("newest");
-  const [selectedVersion, setSelectedVersion] = useState<string>("all");
+  const validCategory = (category || categoryFromPath) as ContentType;
   
-  const getCategoryTitle = () => {
-    if (!category) return 'Все материалы';
-    return CONTENT_TYPE_LABELS[category as ContentType] || 'Материалы';
-  };
-  
+  const [selectedCategory, setSelectedCategory] = useState<ContentType | "all">(
+    validCategory || "all"
+  );
+  const [sortOption, setSortOption] = useState<SortOption>(
+    localStorage.getItem('sortOption') as SortOption || 'newest'
+  );
+  const [selectedVersion, setSelectedVersion] = useState<string | "all">(
+    localStorage.getItem('selectedVersion') || "all"
+  );
+
   useEffect(() => {
-    // Get settings from localStorage
-    const savedSettings = localStorage.getItem('userSettings');
-    if (savedSettings) {
-      const settings = JSON.parse(savedSettings);
-      setSortBy(settings.sortBy || "newest");
-      setSelectedVersion(settings.selectedVersion || "all");
+    if (validCategory) {
+      setSelectedCategory(validCategory);
     }
+  }, [validCategory]);
+
+  useEffect(() => {
+    localStorage.setItem('sortOption', sortOption);
+  }, [sortOption]);
+
+  useEffect(() => {
+    localStorage.setItem('selectedVersion', selectedVersion);
+  }, [selectedVersion]);
+
+  // Фильтрация по категории и версии
+  const filteredContent = SAMPLE_CONTENT.filter(item => {
+    // Фильтрация по категории
+    const categoryMatch = selectedCategory === "all" || item.type === selectedCategory;
     
-    // Check if we're on category page
-    const isCategoryPage = location.pathname.startsWith('/category/');
+    // Фильтрация по версии
+    const versionMatch = selectedVersion === "all" || 
+      item.minecraftVersions.includes(selectedVersion) ||
+      item.minecraftVersions.includes('Все версии');
     
-    // Redirect if needed
-    if (isCategoryPage && !category) {
-      navigate('/');
-      return;
-    }
-    
-    // Handle filtering
-    let filteredContent = [...SAMPLE_CONTENT];
-    
-    if (category) {
-      filteredContent = filteredContent.filter(item => item.type === category);
-    }
-    
-    if (selectedVersion !== "all") {
-      filteredContent = filteredContent.filter(item => 
-        item.minecraftVersions.includes(selectedVersion)
-      );
-    }
-    
-    // Sorting
-    if (sortBy === "newest") {
-      filteredContent.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-    } else if (sortBy === "popular") {
-      filteredContent.sort((a, b) => b.downloadCount - a.downloadCount);
-    }
-    
-    setContent(filteredContent);
-    
-    // Save settings
-    localStorage.setItem('userSettings', JSON.stringify({
-      sortBy,
-      selectedVersion
-    }));
-  }, [category, sortBy, selectedVersion, location.pathname, navigate]);
-  
-  // Фильтрация по поиску
-  const filteredContent = searchQuery
-    ? content.filter(item => 
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : content;
-    
-  const handleCategoryChange = (newCategory: ContentType | "all") => {
-    if (newCategory === "all") {
-      navigate('/');
+    return categoryMatch && versionMatch;
+  });
+
+  // Сортировка
+  const sortedContent = [...filteredContent].sort((a, b) => {
+    if (sortOption === 'newest') {
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
     } else {
-      navigate(`/category/${newCategory}`);
+      return b.downloadCount - a.downloadCount;
     }
+  });
+
+  const renderCategoryIcon = () => {
+    if (selectedCategory === "all") {
+      return <Bookmark size={24} />;
+    }
+    return CATEGORY_ICONS[selectedCategory as ContentType] || <Bookmark size={24} />;
   };
-  
-  const handleSortChange = (option: SortOption) => {
-    setSortBy(option);
-  };
-  
-  const handleVersionChange = (version: string) => {
-    setSelectedVersion(version);
+
+  const getCategoryTitle = () => {
+    if (selectedCategory === "all") {
+      return "Все материалы для Minecraft";
+    }
+    return CATEGORY_TITLES[selectedCategory as ContentType] || "Материалы для Minecraft";
   };
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="container py-8">
-        <div className="flex items-center gap-3 mb-6">
-          {category && CATEGORY_ICONS[category]}
-          <h1 className="text-3xl font-bold">{getCategoryTitle()}</h1>
-        </div>
-        
-        <div className="mb-8">
-          <CategoryFilter
-            selectedCategory={category as ContentType || "all"}
-            onCategoryChange={handleCategoryChange}
-            sortOption={sortBy}
-            onSortChange={handleSortChange}
+      <main className="flex-1">
+        <div className="container py-8">
+          <div className="flex items-center gap-3 mb-6">
+            {renderCategoryIcon()}
+            <h1 className="text-2xl font-bold">{getCategoryTitle()}</h1>
+          </div>
+          
+          <CategoryFilter 
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            sortOption={sortOption}
+            onSortChange={setSortOption}
             selectedVersion={selectedVersion}
-            onVersionChange={handleVersionChange}
+            onVersionChange={setSelectedVersion}
           />
+          
+          <div className="mt-8">
+            <ContentGrid items={sortedContent} />
+          </div>
         </div>
-        
-        <div className="mb-8">
-          <Input
-            placeholder="Поиск по названию или описанию"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        
-        <ContentGrid items={filteredContent} />
       </main>
       <Footer />
     </div>
