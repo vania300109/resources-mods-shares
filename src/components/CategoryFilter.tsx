@@ -1,8 +1,10 @@
+
 import { ContentType, CONTENT_TYPE_LABELS, SortOption, MINECRAFT_VERSIONS } from "@/lib/types";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { useNavigate } from "react-router-dom";
 
 interface CategoryFilterProps {
   selectedCategory: ContentType | "all";
@@ -21,12 +23,24 @@ export default function CategoryFilter({
   selectedVersion,
   onVersionChange
 }: CategoryFilterProps) {
+  const navigate = useNavigate();
+  
+  const handleCategoryChange = (value: string) => {
+    onCategoryChange(value as ContentType | "all");
+    
+    if (value !== "all") {
+      navigate(`/category/${value}`);
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-3">
         <div className="space-y-2">
           <Label>Тематика</Label>
-          <Tabs defaultValue={selectedCategory} onValueChange={(value) => onCategoryChange(value as ContentType | "all")}>
+          <Tabs value={selectedCategory} onValueChange={handleCategoryChange}>
             <TabsList className="w-full flex flex-wrap h-auto p-1">
               <TabsTrigger value="all" className="flex-grow my-1">
                 Все

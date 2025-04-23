@@ -1,72 +1,85 @@
+
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ContentGrid from "@/components/ContentGrid";
+import CategoryFilter from "@/components/CategoryFilter";
 import { SAMPLE_CONTENT } from "@/lib/data";
-import { MinecraftContent, ContentType, CONTENT_TYPE_LABELS } from "@/lib/types";
+import { MinecraftContent, ContentType, SortOption, CONTENT_TYPE_LABELS } from "@/lib/types";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import { Blocks, Package, Database, User, Paintbrush, Box } from "lucide-react";
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
-  'mods': <Blocks className="h-5 w-5" />,
-  'resource-packs': <Package className="h-5 w-5" />,
-  'datapacks': <Database className="h-5 w-5" />,
-  'skins': <User className="h-5 w-5" />,
-  'shaders': <Paintbrush className="h-5 w-5" />,
-  'modpacks': <Box className="h-5 w-5" />
-};
-
-const CATEGORY_MAP: Record<string, ContentType> = {
-  'mods': 'mod',
-  'resource-packs': 'resource-pack',
-  'datapacks': 'data-pack',
-  'skins': 'skin',
-  'shaders': 'shader',
-  'modpacks': 'modpack'
+  'mod': <Blocks className="h-5 w-5" />,
+  'resource-pack': <Package className="h-5 w-5" />,
+  'data-pack': <Database className="h-5 w-5" />,
+  'skin': <User className="h-5 w-5" />,
+  'shader': <Paintbrush className="h-5 w-5" />,
+  'modpack': <Box className="h-5 w-5" />
 };
 
 export default function CategoryPage() {
   const { category } = useParams<{ category: string }>();
+  const location = useLocation();
+  const navigate = useNavigate();
+  
   const [content, setContent] = useState<MinecraftContent[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("newest");
+  const [sortBy, setSortBy] = useState<SortOption>("newest");
+  const [selectedVersion, setSelectedVersion] = useState<string>("all");
   
-  const getCategoryTitle = (categorySlug: string) => {
-    switch (categorySlug) {
-      case 'mods': return 'Моды';
-      case 'resource-packs': return 'Ресурс-паки';
-      case 'datapacks': return 'Дата-паки';
-      case 'skins': return 'Скины';
-      case 'shaders': return 'Шейдеры';
-      case 'modpacks': return 'Сборки модов';
-      default: return 'Материалы';
-    }
+  const getCategoryTitle = () => {
+    if (!category) return 'Все материалы';
+    return CONTENT_TYPE_LABELS[category as ContentType] || 'Материалы';
   };
   
   useEffect(() => {
-    // В реальном приложении здесь был бы запрос к API
-    if (!category || !CATEGORY_MAP[category]) {
-      setContent([]);
+    // Get settings from localStorage
+    const savedSettings = localStorage.getItem('userSettings');
+    if (savedSettings) {
+      const settings = JSON.parse(savedSettings);
+      setSortBy(settings.sortBy || "newest");
+      setSelectedVersion(settings.selectedVersion || "all");
+    }
+    
+    // Check if we're on category page
+    const isCategoryPage = location.pathname.startsWith('/category/');
+    
+    // Redirect if needed
+    if (isCategoryPage && !category) {
+      navigate('/');
       return;
     }
     
-    const filteredContent = SAMPLE_CONTENT.filter(item => item.type === CATEGORY_MAP[category]);
-    let sortedContent = [...filteredContent];
+    // Handle filtering
+    let filteredContent = [...SAMPLE_CONTENT];
     
-    // Сортировка
-    if (sortBy === "newest") {
-      sortedContent.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-    } else if (sortBy === "popular") {
-      sortedContent.sort((a, b) => b.downloadCount - a.downloadCount);
-    } else if (sortBy === "alphabetical") {
-      sortedContent.sort((a, b) => a.title.localeCompare(b.title));
+    if (category) {
+      filteredContent = filteredContent.filter(item => item.type === category);
     }
     
-    setContent(sortedContent);
-  }, [category, sortBy]);
+    if (selectedVersion !== "all") {
+      filteredContent = filteredContent.filter(item => 
+        item.minecraftVersions.includes(selectedVersion)
+      );
+    }
+    
+    // Sorting
+    if (sortBy === "newest") {
+      filteredContent.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    } else if (sortBy === "popular") {
+      filteredContent.sort((a, b) => b.downloadCount - a.downloadCount);
+    }
+    
+    setContent(filteredContent);
+    
+    // Save settings
+    localStorage.setItem('userSettings', JSON.stringify({
+      sortBy,
+      selectedVersion
+    }));
+  }, [category, sortBy, selectedVersion, location.pathname, navigate]);
   
   // Фильтрация по поиску
   const filteredContent = searchQuery
@@ -75,6 +88,22 @@ export default function CategoryPage() {
         item.description.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : content;
+    
+  const handleCategoryChange = (newCategory: ContentType | "all") => {
+    if (newCategory === "all") {
+      navigate('/');
+    } else {
+      navigate(`/category/${newCategory}`);
+    }
+  };
+  
+  const handleSortChange = (option: SortOption) => {
+    setSortBy(option);
+  };
+  
+  const handleVersionChange = (version: string) => {
+    setSelectedVersion(version);
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -82,33 +111,26 @@ export default function CategoryPage() {
       <main className="container py-8">
         <div className="flex items-center gap-3 mb-6">
           {category && CATEGORY_ICONS[category]}
-          <h1 className="text-3xl font-bold">{getCategoryTitle(category || '')}</h1>
+          <h1 className="text-3xl font-bold">{getCategoryTitle()}</h1>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="md:col-span-3">
-            <Input
-              placeholder="Поиск по названию или описанию"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="sort-by" className="sr-only">Сортировка</Label>
-            <Select 
-              value={sortBy} 
-              onValueChange={setSortBy}
-            >
-              <SelectTrigger id="sort-by">
-                <SelectValue placeholder="Сортировка" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Сначала новые</SelectItem>
-                <SelectItem value="popular">Популярные</SelectItem>
-                <SelectItem value="alphabetical">По алфавиту</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="mb-8">
+          <CategoryFilter
+            selectedCategory={category as ContentType || "all"}
+            onCategoryChange={handleCategoryChange}
+            sortOption={sortBy}
+            onSortChange={handleSortChange}
+            selectedVersion={selectedVersion}
+            onVersionChange={handleVersionChange}
+          />
+        </div>
+        
+        <div className="mb-8">
+          <Input
+            placeholder="Поиск по названию или описанию"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
         
         <ContentGrid items={filteredContent} />

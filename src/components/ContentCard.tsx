@@ -1,78 +1,63 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { MinecraftContent, CONTENT_TYPE_LABELS } from "@/lib/types";
-import { Download, Calendar, HardDrive } from "lucide-react";
+
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Link } from "react-router-dom";
+import { MinecraftContent, CONTENT_TYPE_LABELS } from "@/lib/types";
+import { Badge } from "@/components/ui/badge";
+import { ArrowDownToLine, Calendar, User } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { ru } from "date-fns/locale";
 
 interface ContentCardProps {
   item: MinecraftContent;
 }
 
 export default function ContentCard({ item }: ContentCardProps) {
-  const formatDownloads = (count: number) => {
-    if (count >= 1000000) {
-      return `${(count / 1000000).toFixed(1)}М`;
-    } else if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}К`;
-    }
-    return count.toString();
-  };
+  const formattedDate = formatDistanceToNow(new Date(item.updatedAt), {
+    addSuffix: true,
+    locale: ru
+  });
 
   return (
-    <Card className="overflow-hidden flex flex-col h-full">
-      <div className="aspect-video overflow-hidden relative">
-        <img 
-          src={item.imageUrl} 
-          alt={item.title}
-          className="w-full h-full object-cover transition-transform hover:scale-105"
-        />
-        <Badge className="absolute top-2 right-2">
-          {CONTENT_TYPE_LABELS[item.type]}
-        </Badge>
-      </div>
-      <CardHeader className="p-4 pb-2">
-        <CardTitle className="text-lg font-semibold line-clamp-1">
-          <Link to={`/content/${item.id}`} className="hover:underline">
-            {item.title}
-          </Link>
-        </CardTitle>
-        <CardDescription className="flex items-center gap-1 text-xs">
-          <span>Автор: {item.author}</span>
-          <span className="mx-1">•</span>
-          <span className="flex items-center gap-1">
-            <Download className="h-3 w-3" />
-            {formatDownloads(item.downloadCount)}
-          </span>
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="p-4 pt-0 pb-2 flex-grow">
-        <p className="text-sm text-muted-foreground line-clamp-2">
-          {item.description}
-        </p>
-        <div className="flex gap-2 mt-3 flex-wrap">
-          {item.minecraftVersions.slice(0, 3).map((version) => (
-            <Badge key={version} variant="outline" className="text-xs">
-              {version}
+    <Card className="overflow-hidden transition-all hover:shadow-md">
+      <Link to={`/content/${item.id}`}>
+        <div className="aspect-[16/10] w-full overflow-hidden">
+          <img
+            src={item.imageUrl || "/placeholder.svg"}
+            alt={item.title}
+            className="h-full w-full object-cover transition-all hover:scale-105"
+          />
+        </div>
+        <CardHeader className="p-4 pb-0">
+          <div className="flex justify-between items-start gap-2">
+            <h3 className="text-lg font-semibold line-clamp-1">{item.title}</h3>
+            <Badge variant="outline" className="whitespace-nowrap">
+              {CONTENT_TYPE_LABELS[item.type]}
             </Badge>
-          ))}
-          {item.minecraftVersions.length > 3 && (
-            <Badge variant="outline" className="text-xs">
-              +{item.minecraftVersions.length - 3}
-            </Badge>
-          )}
-        </div>
-      </CardContent>
-      <CardFooter className="p-4 pt-2 flex justify-between items-center text-xs text-muted-foreground">
-        <div className="flex items-center gap-1">
-          <Calendar className="h-3 w-3" />
-          <span>{new Date(item.updatedAt).toLocaleDateString('ru-RU')}</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <HardDrive className="h-3 w-3" />
-          <span>{item.fileSize}</span>
-        </div>
-      </CardFooter>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4 pt-2">
+          <p className="text-muted-foreground text-sm line-clamp-2">
+            {item.description}
+          </p>
+        </CardContent>
+        <CardFooter className="p-4 pt-0 text-xs text-muted-foreground">
+          <div className="w-full flex flex-wrap gap-y-1 justify-between items-center">
+            <div className="flex items-center gap-1">
+              <User className="h-3 w-3" />
+              <span>{item.author}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <ArrowDownToLine className="h-3 w-3" />
+              <span>{item.downloadCount.toLocaleString()}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              <span>{formattedDate}</span>
+            </div>
+            <span className="text-xs font-medium">{item.fileSize}</span>
+          </div>
+        </CardFooter>
+      </Link>
     </Card>
   );
 }

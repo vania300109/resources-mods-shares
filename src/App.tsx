@@ -21,6 +21,7 @@ const App = () => (
         <Route path="/" element={<Index />} />
         <Route path="/upload" element={<Upload />} />
         <Route path="/content/:id" element={<ContentDetail />} />
+        <Route path="/category/:category" element={<CategoryPage />} />
         <Route path="/:category" element={<CategoryPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
