@@ -1,117 +1,62 @@
-
-import { ContentType, CONTENT_TYPE_LABELS, SortOption, MINECRAFT_VERSIONS } from "@/lib/types";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { CONTENT_TYPE_LABELS, ContentType } from "@/lib/types";
+import { Link, useParams } from "react-router-dom";
+import { Box, Cpu, FileCode, FileImage, Flame, Layers, Map, Package, Palette, ScrollText } from "lucide-react";
 
 interface CategoryFilterProps {
-  selectedCategory: ContentType | "all";
-  onCategoryChange: (category: ContentType | "all") => void;
-  sortOption: SortOption;
-  onSortChange: (option: SortOption) => void;
-  selectedVersion: string | "all";
-  onVersionChange: (version: string | "all") => void;
+  activeCategory?: ContentType;
 }
 
-export default function CategoryFilter({
-  selectedCategory,
-  onCategoryChange,
-  sortOption,
-  onSortChange,
-  selectedVersion,
-  onVersionChange
-}: CategoryFilterProps) {
-  const navigate = useNavigate();
-  
-  const handleCategoryChange = (value: string) => {
-    onCategoryChange(value as ContentType | "all");
-    
-    if (value !== "all") {
-      navigate(`/category/${value}`);
-    } else {
-      navigate("/");
-    }
-  };
+const getCategoryIcon = (type: ContentType) => {
+  switch (type) {
+    case "mod":
+      return <Box className="h-4 w-4 mr-2" />;
+    case "resource-pack":
+      return <Palette className="h-4 w-4 mr-2" />;
+    case "data-pack":
+      return <FileCode className="h-4 w-4 mr-2" />;
+    case "skin":
+      return <FileImage className="h-4 w-4 mr-2" />;
+    case "shader":
+      return <Flame className="h-4 w-4 mr-2" />;
+    case "modpack":
+      return <Package className="h-4 w-4 mr-2" />;
+    case "shader-pack":
+      return <Layers className="h-4 w-4 mr-2" />;
+    case "resource-pack-collection":
+      return <Layers className="h-4 w-4 mr-2" />;
+    case "complete-pack":
+      return <Layers className="h-4 w-4 mr-2" />;
+    case "plugin":
+      return <Cpu className="h-4 w-4 mr-2" />;
+    case "map":
+      return <Map className="h-4 w-4 mr-2" />;
+    default:
+      return <ScrollText className="h-4 w-4 mr-2" />;
+  }
+};
+
+export default function CategoryFilter({ activeCategory }: CategoryFilterProps) {
+  const params = useParams();
+  const currentCategory = activeCategory || (params.category as ContentType);
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="space-y-2">
-          <Label>Тематика</Label>
-          <Tabs value={selectedCategory} onValueChange={handleCategoryChange}>
-            <TabsList className="w-full flex flex-wrap h-auto p-1">
-              <TabsTrigger value="all" className="flex-grow my-1">
-                Все
-              </TabsTrigger>
-              <TabsTrigger value="mod" className="flex-grow my-1">
-                {CONTENT_TYPE_LABELS.mod}
-              </TabsTrigger>
-              <TabsTrigger value="resource-pack" className="flex-grow my-1">
-                {CONTENT_TYPE_LABELS["resource-pack"]}
-              </TabsTrigger>
-              <TabsTrigger value="data-pack" className="flex-grow my-1">
-                {CONTENT_TYPE_LABELS["data-pack"]}
-              </TabsTrigger>
-              <TabsTrigger value="skin" className="flex-grow my-1">
-                {CONTENT_TYPE_LABELS.skin}
-              </TabsTrigger>
-              <TabsTrigger value="shader" className="flex-grow my-1">
-                {CONTENT_TYPE_LABELS.shader}
-              </TabsTrigger>
-              <TabsTrigger value="modpack" className="flex-grow my-1">
-                {CONTENT_TYPE_LABELS.modpack}
-              </TabsTrigger>
-              <TabsTrigger value="shader-pack" className="flex-grow my-1">
-                {CONTENT_TYPE_LABELS["shader-pack"]}
-              </TabsTrigger>
-              <TabsTrigger value="resource-pack-collection" className="flex-grow my-1">
-                {CONTENT_TYPE_LABELS["resource-pack-collection"]}
-              </TabsTrigger>
-              <TabsTrigger value="map" className="flex-grow my-1">
-                {CONTENT_TYPE_LABELS.map}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Версия Minecraft</Label>
-          <Select
-            value={selectedVersion}
-            onValueChange={(value) => onVersionChange(value)}
+    <div className="pb-4 mb-6 overflow-x-auto scrollbar-hide">
+      <div className="flex space-x-2 pb-2 min-w-max">
+        {Object.entries(CONTENT_TYPE_LABELS).map(([type, label]) => (
+          <Button
+            key={type}
+            variant={currentCategory === type ? "default" : "outline"}
+            size="sm"
+            asChild
+            className="flex-shrink-0"
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Все версии" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Все версии</SelectItem>
-              <Separator className="my-1" />
-              {MINECRAFT_VERSIONS.map((version) => (
-                <SelectItem key={version} value={version}>
-                  {version}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Сортировка</Label>
-          <Select
-            value={sortOption}
-            onValueChange={(value) => onSortChange(value as SortOption)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Сортировка" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Новые</SelectItem>
-              <SelectItem value="popular">Популярные</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+            <Link to={`/category/${type}`}>
+              {getCategoryIcon(type as ContentType)}
+              {label}
+            </Link>
+          </Button>
+        ))}
       </div>
     </div>
   );

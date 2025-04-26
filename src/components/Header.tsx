@@ -15,8 +15,8 @@ export default function Header() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // В реальном приложении перенаправит на страницу поиска
-      navigate(`/?search=${encodeURIComponent(searchQuery)}`);
+      // Перенаправляем на страницу поиска с параметром запроса
+      navigate(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
   
@@ -42,6 +42,9 @@ export default function Header() {
               </Link>
               <Link to="/category/shader" className="text-sm font-medium transition-colors hover:text-primary">
                 Шейдеры
+              </Link>
+              <Link to="/category/plugin" className="text-sm font-medium transition-colors hover:text-primary">
+                Плагины
               </Link>
               <Link to="/upload" className="text-sm font-medium transition-colors hover:text-primary">
                 Загрузить
@@ -69,7 +72,19 @@ export default function Header() {
               <Link to="/upload">Загрузить контент</Link>
             </Button>
           ) : (
-            <MobileNav />
+            <>
+              <form onSubmit={handleSearch} className="relative md:hidden">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Поиск..."
+                  className="w-32 pl-8"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </form>
+              <MobileNav />
+            </>
           )}
         </div>
       </div>

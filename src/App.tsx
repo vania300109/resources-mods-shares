@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import Upload from "./pages/Upload";
 import ContentDetail from "./pages/ContentDetail";
 import CategoryPage from "./pages/CategoryPage";
+import SearchPage from "./pages/SearchPage";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +23,7 @@ const App = () => (
         <Route path="/content/:id" element={<ContentDetail />} />
         <Route path="/category/:category" element={<CategoryPage />} />
         <Route path="/:category" element={<CategoryPage />} />
+        <Route path="/search" element={<SearchPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </TooltipProvider>

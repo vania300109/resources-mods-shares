@@ -19,39 +19,21 @@ export default function Footer() {
             <div>
               <h3 className="text-sm font-semibold mb-3">Категории</h3>
               <ul className="space-y-2 text-sm">
-                <li><Link to="/mods" className="text-muted-foreground hover:text-foreground">Моды</Link></li>
-                <li><Link to="/resource-packs" className="text-muted-foreground hover:text-foreground">Ресурс-паки</Link></li>
-                <li><Link to="/datapacks" className="text-muted-foreground hover:text-foreground">Дата-паки</Link></li>
-                <li><Link to="/skins" className="text-muted-foreground hover:text-foreground">Скины</Link></li>
-                <li><Link to="/shaders" className="text-muted-foreground hover:text-foreground">Шейдеры</Link></li>
-                <li><Link to="/modpacks" className="text-muted-foreground hover:text-foreground">Сборки</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="text-sm font-semibold mb-3">Сообщество</h3>
-              <ul className="space-y-2 text-sm">
-                <li><Link to="#" className="text-muted-foreground hover:text-foreground">Форум</Link></li>
-                <li><Link to="#" className="text-muted-foreground hover:text-foreground">Блог</Link></li>
-                <li><Link to="#" className="text-muted-foreground hover:text-foreground">Дискорд</Link></li>
-                <li><Link to="#" className="text-muted-foreground hover:text-foreground">Авторам</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="text-sm font-semibold mb-3">Информация</h3>
-              <ul className="space-y-2 text-sm">
-                <li><Link to="#" className="text-muted-foreground hover:text-foreground">О нас</Link></li>
-                <li><Link to="#" className="text-muted-foreground hover:text-foreground">Правила</Link></li>
-                <li><Link to="#" className="text-muted-foreground hover:text-foreground">Контакты</Link></li>
-                <li><Link to="#" className="text-muted-foreground hover:text-foreground">Политика конфиденциальности</Link></li>
+                <li><Link to="/category/mod" className="text-muted-foreground hover:text-foreground">Моды</Link></li>
+                <li><Link to="/category/resource-pack" className="text-muted-foreground hover:text-foreground">Ресурс-паки</Link></li>
+                <li><Link to="/category/data-pack" className="text-muted-foreground hover:text-foreground">Дата-паки</Link></li>
+                <li><Link to="/category/skin" className="text-muted-foreground hover:text-foreground">Скины</Link></li>
+                <li><Link to="/category/shader" className="text-muted-foreground hover:text-foreground">Шейдеры</Link></li>
+                <li><Link to="/category/plugin" className="text-muted-foreground hover:text-foreground">Плагины</Link></li>
+                <li><Link to="/category/modpack" className="text-muted-foreground hover:text-foreground">Сборки</Link></li>
+                <li><Link to="/category/map" className="text-muted-foreground hover:text-foreground">Карты</Link></li>
               </ul>
             </div>
           </div>
         </div>
         
         <div className="mt-8 pt-4 border-t text-center text-sm text-muted-foreground">
-          <p>© 2023 МайнКрафт Моды. Все права защищены.</p>
+          <p>© {new Date().getFullYear()} МайнКрафт Моды. Все права защищены.</p>
           <p className="mt-1">Minecraft принадлежит Mojang AB. Этот сайт не связан с Mojang.</p>
         </div>
       </div>

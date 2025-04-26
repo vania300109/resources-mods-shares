@@ -7,6 +7,8 @@ export type ContentType =
   | 'modpack'
   | 'shader-pack'
   | 'resource-pack-collection'
+  | 'complete-pack'
+  | 'plugin'
   | 'map';
 
 export type SortOption = 'newest' | 'popular';
@@ -18,6 +20,13 @@ export interface VideoContent {
   url: string;
   title?: string;
   thumbnail?: string;
+}
+
+export interface FileVersion {
+  version: string;
+  url: string;
+  fileName: string;
+  fileSize: string;
 }
 
 export interface MinecraftContent {
@@ -34,6 +43,8 @@ export interface MinecraftContent {
   minecraftVersions: string[];
   fileSize: string;
   videos?: VideoContent[];
+  fileVersions?: FileVersion[];
+  screenshots?: string[];
 }
 
 export const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
@@ -45,6 +56,8 @@ export const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
   'modpack': 'Сборка модов',
   'shader-pack': 'Сборка шейдеров',
   'resource-pack-collection': 'Сборка ресурс-паков',
+  'complete-pack': 'Комплексная сборка',
+  'plugin': 'Плагин',
   'map': 'Карта'
 };
 
