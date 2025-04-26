@@ -68,3 +68,10 @@
   -ms-overflow-style: none;  /* IE и Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/* Улучшенные стили для мобильных устройств */
+@media (max-width: 640px) {
+  .category-grid {
+    gap: 0.5rem;
+  }
+}

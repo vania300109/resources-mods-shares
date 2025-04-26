@@ -41,15 +41,15 @@ export default function CategoryFilter({ activeCategory }: CategoryFilterProps) 
   const currentCategory = activeCategory || (params.category as ContentType);
 
   return (
-    <div className="pb-4 mb-6 overflow-x-auto scrollbar-hide">
-      <div className="flex space-x-2 pb-2 min-w-max">
+    <div className="pb-4 mb-6">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {Object.entries(CONTENT_TYPE_LABELS).map(([type, label]) => (
           <Button
             key={type}
             variant={currentCategory === type ? "default" : "outline"}
             size="sm"
             asChild
-            className="flex-shrink-0"
+            className="w-full justify-start"
           >
             <Link to={`/category/${type}`}>
               {getCategoryIcon(type as ContentType)}
