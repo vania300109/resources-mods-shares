@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
 import Index from "@/pages/Index";
 import CategoryPage from "@/pages/CategoryPage";
 import ContentDetail from "@/pages/ContentDetail";
@@ -12,6 +13,39 @@ import Footer from "@/components/Footer";
 import "./App.css";
 
 function App() {
+  // Функция для перезагрузки страницы после 3 минут бездействия
+  useEffect(() => {
+    let inactivityTimer: NodeJS.Timeout;
+    
+    const resetTimer = () => {
+      // Очищаем предыдущий таймер
+      clearTimeout(inactivityTimer);
+      // Устанавливаем новый таймер на 3 минуты (180000 мс)
+      inactivityTimer = setTimeout(() => {
+        window.location.reload();
+      }, 180000);
+    };
+    
+    // События, которые сбрасывают таймер
+    const events = ["mousedown", "mousemove", "keypress", "scroll", "touchstart"];
+    
+    // Инициализируем таймер
+    resetTimer();
+    
+    // Добавляем слушатели событий
+    events.forEach(event => {
+      document.addEventListener(event, resetTimer);
+    });
+    
+    // Очистка при размонтировании компонента
+    return () => {
+      clearTimeout(inactivityTimer);
+      events.forEach(event => {
+        document.removeEventListener(event, resetTimer);
+      });
+    };
+  }, []);
+
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
       <div className="flex flex-col min-h-screen">

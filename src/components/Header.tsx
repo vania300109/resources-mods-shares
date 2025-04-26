@@ -26,7 +26,7 @@ export default function Header() {
         <div className="flex items-center gap-2 md:gap-6">
           <Link to="/" className="flex items-center gap-2 font-bold text-xl">
             <img src="/logo-b.svg" alt="Logo" className="h-6 w-6" />
-            <span className="hidden md:inline">Minecraft Hub</span>
+            <span className="hidden md:inline">Minecraft Vani</span>
           </Link>
           
           {!isMobile && (
