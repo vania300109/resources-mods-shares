@@ -44,7 +44,7 @@ export default function SearchPage() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : results.length > 0 ? (
-          <ContentGrid content={results} />
+          <ContentGrid items={results} />
         ) : (
           <div className="text-center py-12">
             <h2 className="text-xl font-semibold mb-2">Ничего не найдено</h2>

@@ -127,5 +127,38 @@ export const SAMPLE_CONTENT: MinecraftContent[] = [
     downloadUrl: '#',
     minecraftVersions: ['1.20.1', '1.19.4', '1.18.2'],
     fileSize: '45.3 МБ'
+  },
+  {
+    id: '10',
+    title: 'Ultimate Edition',
+    description: 'Полноценная сборка с модами, ресурс-паками и шейдерами для максимального погружения',
+    type: 'complete-pack',
+    author: 'MasterCrafter',
+    downloadCount: 1526843,
+    createdAt: '2022-12-01',
+    updatedAt: '2023-11-15',
+    imageUrl: '/placeholder.svg',
+    downloadUrl: '#',
+    minecraftVersions: ['1.19.4', '1.18.2'],
+    fileSize: '1.2 ГБ'
+  },
+  {
+    id: '11',
+    title: 'EssentialsX',
+    description: 'Набор базовых команд и функций для серверов Minecraft',
+    type: 'plugin',
+    author: 'EssentialsTeam',
+    downloadCount: 12458963,
+    createdAt: '2021-10-18',
+    updatedAt: '2023-09-25',
+    imageUrl: '/placeholder.svg',
+    downloadUrl: '#',
+    minecraftVersions: ['1.20.1', '1.19.4', '1.18.2', '1.17.1'],
+    fileSize: '8.4 МБ'
   }
 ];
+
+// Экспортируем функцию для получения всех данных, чтобы исправить ошибку в SearchPage
+export const getMockContent = (): MinecraftContent[] => {
+  return SAMPLE_CONTENT;
+};
