@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { CONTENT_TYPE_LABELS, ContentType } from "@/lib/types";
 import { Link, useParams } from "react-router-dom";
 import { Box, Cpu, FileCode, FileImage, Flame, Layers, Map, Package, Palette, ScrollText } from "lucide-react";
@@ -9,6 +8,8 @@ interface CategoryFilterProps {
 
 const getCategoryIcon = (type: ContentType) => {
   switch (type) {
+    case "all":
+      return <Layers className="h-4 w-4 mr-2" />;
     case "mod":
       return <Box className="h-4 w-4 mr-2" />;
     case "resource-pack":
@@ -44,18 +45,18 @@ export default function CategoryFilter({ activeCategory }: CategoryFilterProps) 
     <div className="pb-4 mb-6">
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {Object.entries(CONTENT_TYPE_LABELS).map(([type, label]) => (
-          <Button
+          <Link
             key={type}
-            variant={currentCategory === type ? "default" : "outline"}
-            size="sm"
-            asChild
-            className="w-full justify-start"
+            to={`/category/${type}`}
+            className={`flex items-center px-3 py-2 text-sm rounded-md ${
+              currentCategory === type 
+                ? "bg-primary text-primary-foreground" 
+                : "bg-card hover:bg-accent"
+            }`}
           >
-            <Link to={`/category/${type}`}>
-              {getCategoryIcon(type as ContentType)}
-              {label}
-            </Link>
-          </Button>
+            {getCategoryIcon(type as ContentType)}
+            {label}
+          </Link>
         ))}
       </div>
     </div>

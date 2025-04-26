@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ContentType, CONTENT_TYPE_LABELS, FileVersion, MINECRAFT_VERSIONS, VideoContent } from "@/lib/types";
 import { useState } from "react";
-import { Trash, Upload, X, Link as LinkIcon, Plus } from "lucide-react";
+import { Trash, Upload, X, Plus } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import VideoUploader from "@/components/VideoUploader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,12 +21,32 @@ function FileVersionForm({ versions, onVersionsChange }: FileVersionFormProps) {
   const [fileVersion, setFileVersion] = useState("");
   const [fileName, setFileName] = useState("");
   const [fileSize, setFileSize] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [uploadMethod, setUploadMethod] = useState<"file" | "url">("url");
 
   const addVersion = () => {
-    if (!fileUrl || !fileVersion) {
+    if (!fileVersion) {
       toast({
         title: "Ошибка",
-        description: "Укажите URL файла и версию Minecraft",
+        description: "Укажите версию Minecraft",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (uploadMethod === "url" && !fileUrl) {
+      toast({
+        title: "Ошибка",
+        description: "Укажите URL файла",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (uploadMethod === "file" && !file) {
+      toast({
+        title: "Ошибка",
+        description: "Выберите файл для загрузки",
         variant: "destructive"
       });
       return;
@@ -34,9 +54,10 @@ function FileVersionForm({ versions, onVersionsChange }: FileVersionFormProps) {
 
     const newVersion: FileVersion = {
       version: fileVersion,
-      url: fileUrl,
-      fileName: fileName || "file.zip",
-      fileSize: fileSize || "Неизвестно"
+      url: uploadMethod === "url" ? fileUrl : undefined,
+      file: uploadMethod === "file" ? file : undefined,
+      fileName: fileName || (uploadMethod === "file" && file ? file.name : "file.zip"),
+      fileSize: fileSize || (uploadMethod === "file" && file ? `${(file.size / (1024 * 1024)).toFixed(2)} МБ` : "Неизвестно")
     };
 
     onVersionsChange([...versions, newVersion]);
@@ -46,6 +67,7 @@ function FileVersionForm({ versions, onVersionsChange }: FileVersionFormProps) {
     setFileVersion("");
     setFileName("");
     setFileSize("");
+    setFile(null);
   };
 
   const removeVersion = (index: number) => {
@@ -56,17 +78,72 @@ function FileVersionForm({ versions, onVersionsChange }: FileVersionFormProps) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="file-url">URL файла</Label>
-          <Input 
-            id="file-url" 
-            placeholder="https://example.com/file.zip" 
-            value={fileUrl}
-            onChange={(e) => setFileUrl(e.target.value)}
-          />
-        </div>
+      <Tabs defaultValue="url" onValueChange={(v) => setUploadMethod(v as "file" | "url")}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="url">Ссылка на файл</TabsTrigger>
+          <TabsTrigger value="file">Загрузить файл</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="url" className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="file-url">URL файла</Label>
+            <Input 
+              id="file-url" 
+              placeholder="https://example.com/file.zip" 
+              value={fileUrl}
+              onChange={(e) => setFileUrl(e.target.value)}
+            />
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="file" className="space-y-4">
+          <div className="border rounded-md p-4">
+            {file ? (
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-primary/10 rounded-md">
+                    <Upload className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="text-sm">{file.name} ({(file.size / (1024 * 1024)).toFixed(2)} МБ)</span>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  type="button"
+                  onClick={() => setFile(null)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Input 
+                  id="version-file" 
+                  type="file" 
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setFile(e.target.files[0]);
+                      if (!fileName) setFileName(e.target.files[0].name);
+                      if (!fileSize) setFileSize(`${(e.target.files[0].size / (1024 * 1024)).toFixed(2)} МБ`);
+                    }
+                  }}
+                />
+                <Label 
+                  htmlFor="version-file" 
+                  className="flex flex-col items-center gap-2 cursor-pointer py-4"
+                >
+                  <Upload className="h-10 w-10 text-muted-foreground" />
+                  <span className="text-sm font-medium">Нажмите для загрузки файла</span>
+                  <span className="text-xs text-muted-foreground">ZIP, JAR или другие форматы</span>
+                </Label>
+              </>
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
 
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label htmlFor="file-version">Версия Minecraft</Label>
           <Select value={fileVersion} onValueChange={setFileVersion}>
@@ -82,9 +159,7 @@ function FileVersionForm({ versions, onVersionsChange }: FileVersionFormProps) {
             </SelectContent>
           </Select>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="file-name">Имя файла (необязательно)</Label>
           <Input 
@@ -120,6 +195,8 @@ function FileVersionForm({ versions, onVersionsChange }: FileVersionFormProps) {
                   <span className="font-medium">{version.version}</span>
                   <div className="text-sm text-muted-foreground">
                     {version.fileName} ({version.fileSize})
+                    {version.url && <div className="text-xs opacity-70">Ссылка: {version.url}</div>}
+                    {version.file && <div className="text-xs opacity-70">Файл: {version.file.name}</div>}
                   </div>
                 </div>
                 <Button
@@ -321,11 +398,14 @@ export default function UploadForm() {
                 <SelectValue placeholder="Выберите тип контента" />
               </SelectTrigger>
               <SelectContent>
-                {Object.entries(CONTENT_TYPE_LABELS).map(([value, label]) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
+                {Object.entries(CONTENT_TYPE_LABELS)
+                  .filter(([key]) => key !== 'all') // Исключаем категорию "Всё" из списка загрузки
+                  .map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))
+                }
               </SelectContent>
             </Select>
           </div>

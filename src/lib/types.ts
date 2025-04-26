@@ -1,4 +1,5 @@
 export type ContentType = 
+  | 'all'
   | 'mod'
   | 'resource-pack'
   | 'data-pack'
@@ -24,7 +25,8 @@ export interface VideoContent {
 
 export interface FileVersion {
   version: string;
-  url: string;
+  url?: string;
+  file?: File;
   fileName: string;
   fileSize: string;
 }
@@ -48,6 +50,7 @@ export interface MinecraftContent {
 }
 
 export const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
+  'all': 'Всё',
   'mod': 'Мод',
   'resource-pack': 'Ресурс-пак',
   'data-pack': 'Дата-пак',
