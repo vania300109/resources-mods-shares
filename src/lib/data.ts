@@ -1,212 +1,177 @@
-import { MinecraftContent } from "./types";
+import { ContentItem, ContentType } from "./types";
 
-// Примеры данных для приложения
-export const SAMPLE_CONTENT: MinecraftContent[] = [
-  {
-    id: "optifine-1",
-    title: "OptiFine HD",
-    description: "OptiFine — это оптимизационный мод для Minecraft, который значительно улучшает FPS и производительность игры. Он также добавляет поддержку HD текстур, шейдеров и многое другое.",
-    type: "mod",
-    author: "sp614x",
-    downloadCount: 15000000,
-    createdAt: "2020-08-25T12:00:00Z",
-    updatedAt: "2023-10-15T15:30:00Z",
-    imageUrl: "https://source.unsplash.com/random/300x200?minecraft,mod",
-    downloadUrl: "#",
-    minecraftVersions: ["1.20.1", "1.19.4", "1.18.2", "1.17.1", "1.16.5"],
-    fileSize: "5 МБ",
-    screenshots: [
-      "https://source.unsplash.com/random/800x450?minecraft,optifine,1",
-      "https://source.unsplash.com/random/800x450?minecraft,optifine,2",
-      "https://source.unsplash.com/random/800x450?minecraft,optifine,3"
-    ],
-    videos: [
-      {
-        type: "youtube",
-        url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        title: "OptiFine HD обзор",
-        thumbnail: "https://source.unsplash.com/random/300x200?minecraft,video"
-      }
-    ],
-    fileVersions: [
-      {
-        version: "1.20.1",
-        url: "#",
-        fileName: "OptiFine_1.20.1_HD_U_I9.jar",
-        fileSize: "5.2 МБ"
-      },
-      {
-        version: "1.19.4",
-        url: "#",
-        fileName: "OptiFine_1.19.4_HD_U_I8.jar",
-        fileSize: "5.1 МБ"
-      },
-      {
-        version: "1.18.2",
-        url: "#",
-        fileName: "OptiFine_1.18.2_HD_U_H7.jar",
-        fileSize: "5.0 МБ"
-      }
-    ]
-  },
-  {
-    id: "faithful-2",
-    title: "Faithful 32x",
-    description: "Faithful 32x — это ресурс-пак, который удваивает разрешение ванильных текстур, сохраняя при этом оригинальный стиль Minecraft. Идеально подходит для тех, кто хочет улучшить внешний вид игры, не меняя её атмосферу.",
-    type: "resource-pack",
-    author: "Faithful Team",
-    downloadCount: 8000000,
-    createdAt: "2021-04-10T08:15:00Z",
-    updatedAt: "2023-09-20T10:45:00Z",
-    imageUrl: "https://source.unsplash.com/random/300x200?minecraft,texture",
-    downloadUrl: "#",
-    minecraftVersions: ["1.20", "1.19", "1.18", "1.17", "1.16"],
-    fileSize: "25 МБ",
-    screenshots: [
-      "https://source.unsplash.com/random/800x450?minecraft,texture,1",
-      "https://source.unsplash.com/random/800x450?minecraft,texture,2"
-    ]
-  },
-  {
-    id: "bsl-3",
-    title: "BSL Shaders",
-    description: "BSL Shaders — это реалистичный шейдер для Minecraft, который добавляет красивые световые эффекты, тени, отражения и многое другое, при этом сохраняя хорошую производительность.",
-    type: "shader",
-    author: "Capt Tatsu",
-    downloadCount: 5000000,
-    createdAt: "2022-01-05T14:30:00Z",
-    updatedAt: "2023-08-12T18:20:00Z",
-    imageUrl: "https://source.unsplash.com/random/300x200?minecraft,shader",
-    downloadUrl: "#",
-    minecraftVersions: ["1.20", "1.19", "1.18", "1.17", "1.16"],
-    fileSize: "15 МБ",
-    screenshots: [
-      "https://source.unsplash.com/random/800x450?minecraft,shader,1",
-      "https://source.unsplash.com/random/800x450?minecraft,shader,2",
-      "https://source.unsplash.com/random/800x450?minecraft,shader,3",
-      "https://source.unsplash.com/random/800x450?minecraft,shader,4"
-    ],
-    videos: [
-      {
-        type: "youtube",
-        url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        title: "BSL Shaders Showcase",
-        thumbnail: "https://source.unsplash.com/random/300x200?minecraft,shader,video"
-      }
-    ]
-  },
-  {
-    id: "rlcraft-4",
-    title: "RLCraft",
-    description: "RLCraft — это хардкорная сборка модов, которая превращает Minecraft в сложную игру на выживание с элементами RPG. Включает более 100 модов, которые добавляют новые механики, мобов, измерения и многое другое.",
-    type: "modpack",
-    author: "Shivaxi",
-    downloadCount: 3000000,
-    createdAt: "2020-05-20T09:45:00Z",
-    updatedAt: "2023-07-08T11:30:00Z",
-    imageUrl: "https://source.unsplash.com/random/300x200?minecraft,dragon",
-    downloadUrl: "#",
-    minecraftVersions: ["1.12.2"],
-    fileSize: "250 МБ",
-    screenshots: [
-      "https://source.unsplash.com/random/800x450?minecraft,dragon,1",
-      "https://source.unsplash.com/random/800x450?minecraft,dragon,2"
-    ],
-    videos: [
-      {
-        type: "youtube",
-        url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        title: "RLCraft гайд для начинающих",
-        thumbnail: "https://source.unsplash.com/random/300x200?minecraft,dragon,video"
-      }
-    ]
-  },
-  {
-    id: "adventure-5",
-    title: "Epic Adventure",
-    description: "Epic Adventure — это приключенческая карта для Minecraft, наполненная головоломками, испытаниями и эпическими сражениями с боссами. Пройдите через различные биомы и подземелья, чтобы найти сокровища и спасти королевство!",
-    type: "map",
-    author: "BuilderTeam",
-    downloadCount: 1000000,
-    createdAt: "2022-03-15T16:20:00Z",
-    updatedAt: "2023-05-30T13:10:00Z",
-    imageUrl: "https://source.unsplash.com/random/300x200?minecraft,castle",
-    downloadUrl: "#",
-    minecraftVersions: ["1.19.4", "1.19.3", "1.19.2"],
-    fileSize: "120 МБ",
-    screenshots: [
-      "https://source.unsplash.com/random/800x450?minecraft,castle,1",
-      "https://source.unsplash.com/random/800x450?minecraft,castle,2",
-      "https://source.unsplash.com/random/800x450?minecraft,castle,3"
-    ],
-    videos: [
-      {
-        type: "youtube",
-        url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        title: "Epic Adventure трейлер",
-        thumbnail: "https://source.unsplash.com/random/300x200?minecraft,castle,video"
-      }
-    ]
-  },
-  {
-    id: "essentials-6",
-    title: "EssentialsX",
-    description: "EssentialsX — это популярный плагин для серверов Minecraft, который добавляет множество команд и функций для администрирования сервера и улучшения игрового процесса. Включает телепортацию, экономику, чат-форматирование и многое другое.",
-    type: "plugin",
-    author: "EssentialsX Team",
-    downloadCount: 4500000,
-    createdAt: "2020-10-10T10:00:00Z",
-    updatedAt: "2023-11-05T09:25:00Z",
-    imageUrl: "https://source.unsplash.com/random/300x200?minecraft,server",
-    downloadUrl: "#",
-    minecraftVersions: ["1.20.1", "1.19.4", "1.18.2", "1.17.1", "1.16.5"],
-    fileSize: "8 МБ"
-  },
-  {
-    id: "ultimate-7",
-    title: "Ultimate Edition",
-    description: "Ultimate Edition — это полная комплексная сборка для Minecraft, которая включает в себя моды для оптимизации, ресурс-паки для улучшения графики и шейдеры для реалистичного освещения. Всё тщательно настроено для совместной работы и максимального удобства игрока.",
-    type: "complete-pack",
-    author: "UltraTeam",
-    downloadCount: 750000,
-    createdAt: "2023-01-20T12:30:00Z",
-    updatedAt: "2023-12-01T14:15:00Z",
-    imageUrl: "https://source.unsplash.com/random/300x200?minecraft,landscape",
-    downloadUrl: "#",
-    minecraftVersions: ["1.19.4", "1.18.2"],
-    fileSize: "1.2 ГБ",
-    screenshots: [
-      "https://source.unsplash.com/random/800x450?minecraft,landscape,1",
-      "https://source.unsplash.com/random/800x450?minecraft,landscape,2",
-      "https://source.unsplash.com/random/800x450?minecraft,landscape,3",
-      "https://source.unsplash.com/random/800x450?minecraft,landscape,4"
-    ],
-    videos: [
-      {
-        type: "youtube",
-        url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        title: "Ultimate Edition Showcase",
-        thumbnail: "https://source.unsplash.com/random/300x200?minecraft,landscape,video"
-      }
-    ],
-    fileVersions: [
-      {
-        version: "1.19.4",
-        url: "#",
-        fileName: "Ultimate_Edition_1.19.4.zip",
-        fileSize: "1.2 ГБ"
-      },
-      {
-        version: "1.18.2",
-        url: "#",
-        fileName: "Ultimate_Edition_1.18.2.zip",
-        fileSize: "1.1 ГБ"
-      }
-    ]
-  }
-];
-
-// Функция для получения контента (имитация API)
-export function getMockContent(): MinecraftContent[] {
+// Функция для имитации API получения контента
+export function getMockContent(): ContentItem[] {
   return SAMPLE_CONTENT;
 }
+
+export const SAMPLE_CONTENT: ContentItem[] = [
+  {
+    id: "mod1",
+    title: "JEI (Just Enough Items)",
+    description: "Мод, отображающий все предметы и рецепты в игре.",
+    thumbnailUrl: "https://images.unsplash.com/photo-1511512578047-dfb367046420?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80",
+    downloadCount: 15000000,
+    type: "mod",
+    authorId: "user1",
+    authorName: "Mezz",
+    authorAvatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    minecraftVersions: ["1.16.5", "1.17.1", "1.18.2", "1.19.3", "1.20"],
+    createdAt: "2020-01-15T12:00:00Z",
+    updatedAt: "2023-03-10T15:30:00Z"
+  },
+  {
+    id: "mod2",
+    title: "OptiFine",
+    description: "Оптимизация, дополнительные настройки графики и поддержка HD-ресурспаков.",
+    thumbnailUrl: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    downloadCount: 25000000,
+    type: "mod",
+    authorId: "user2",
+    authorName: "sp614x",
+    authorAvatarUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80",
+    minecraftVersions: ["1.16.5", "1.17.1", "1.18.2", "1.19.3", "1.20"],
+    createdAt: "2019-05-20T10:00:00Z",
+    updatedAt: "2023-04-05T09:45:00Z"
+  },
+  {
+    id: "pack1",
+    title: "Faithful 32x",
+    description: "Улучшенная версия стандартных текстур с удвоенным разрешением.",
+    thumbnailUrl: "https://images.unsplash.com/photo-1551103782-8ab07afd45c1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    downloadCount: 10000000,
+    type: "resource-pack",
+    authorId: "user3",
+    authorName: "Vattic & Faithful Team",
+    authorAvatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1064&q=80",
+    minecraftVersions: ["1.16.5", "1.17.1", "1.18.2", "1.19.3", "1.20"],
+    createdAt: "2020-08-12T14:25:00Z",
+    updatedAt: "2023-02-28T11:20:00Z"
+  },
+  {
+    id: "shader1",
+    title: "BSL Shaders",
+    description: "Реалистичные шейдеры с отличным балансом между качеством и производительностью.",
+    thumbnailUrl: "https://images.unsplash.com/photo-1484417894907-623942c8ee29?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2064&q=80",
+    downloadCount: 8000000,
+    type: "shader",
+    authorId: "user4",
+    authorName: "CaptTatsu",
+    authorAvatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80",
+    minecraftVersions: ["1.16.5", "1.17.1", "1.18.2", "1.19.3"],
+    createdAt: "2021-03-05T08:30:00Z",
+    updatedAt: "2023-01-15T16:40:00Z"
+  },
+  {
+    id: "mod3",
+    title: "Create",
+    description: "Механизмы, конвейеры и вращающиеся блоки для впечатляющих инженерных конструкций.",
+    thumbnailUrl: "https://images.unsplash.com/photo-1624953587687-daf255b6b80a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80",
+    downloadCount: 5000000,
+    type: "mod",
+    authorId: "user5",
+    authorName: "simibubi",
+    authorAvatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80",
+    minecraftVersions: ["1.16.5", "1.18.2", "1.19.3", "1.20"],
+    createdAt: "2021-01-10T09:15:00Z",
+    updatedAt: "2023-03-22T13:10:00Z"
+  },
+  {
+    id: "plugin1",
+    title: "EssentialsX",
+    description: "Основной плагин для серверов Spigot/Paper с множеством полезных команд и возможностей.",
+    thumbnailUrl: "https://images.unsplash.com/photo-1627398242454-45a1465c2479?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80",
+    downloadCount: 12000000,
+    type: "plugin",
+    authorId: "user6",
+    authorName: "EssentialsX Team",
+    authorAvatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80",
+    minecraftVersions: ["1.16.5", "1.17.1", "1.18.2", "1.19.3", "1.20"],
+    createdAt: "2020-04-18T11:45:00Z",
+    updatedAt: "2023-05-02T10:30:00Z"
+  },
+  {
+    id: "map1",
+    title: "Adventure Islands",
+    description: "Обширная приключенческая карта с несколькими островами, квестами и головоломками.",
+    thumbnailUrl: "https://images.unsplash.com/photo-1439405326854-014607f694d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    downloadCount: 3000000,
+    type: "map",
+    authorId: "user7",
+    authorName: "MCMaster",
+    authorAvatarUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80",
+    minecraftVersions: ["1.16.5", "1.17.1"],
+    createdAt: "2021-06-30T15:20:00Z",
+    updatedAt: "2021-10-12T14:05:00Z"
+  },
+  {
+    id: "modpack1",
+    title: "Better Minecraft",
+    description: "Сборка модов, улучшающая все аспекты Minecraft: от исследования до сражений.",
+    thumbnailUrl: "https://images.unsplash.com/photo-1496171367470-9ed9a91ea931?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    downloadCount: 7000000,
+    type: "modpack",
+    authorId: "user8",
+    authorName: "DAD3",
+    authorAvatarUrl: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80",
+    minecraftVersions: ["1.16.5", "1.18.2"],
+    createdAt: "2021-08-25T12:50:00Z",
+    updatedAt: "2022-11-08T09:20:00Z"
+  },
+  {
+    id: "resource-pack2",
+    title: "Patrix",
+    description: "Высококачественный реалистичный ресурс-пак с разрешением 128x и ПБР текстурами.",
+    thumbnailUrl: "https://images.unsplash.com/photo-1544256718-3bcf237f3974?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80",
+    downloadCount: 4000000,
+    type: "resource-pack",
+    authorId: "user9",
+    authorName: "PatrixPlus",
+    authorAvatarUrl: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    minecraftVersions: ["1.16.5", "1.17.1", "1.18.2", "1.19.3"],
+    createdAt: "2021-02-14T16:35:00Z",
+    updatedAt: "2023-01-30T12:25:00Z"
+  },
+  {
+    id: "shader2",
+    title: "Complementary Shaders",
+    description: "Шейдеры, дополняющие ванильный стиль Minecraft с впечатляющими эффектами освещения.",
+    thumbnailUrl: "https://images.unsplash.com/photo-1603481588273-2f908a9a7a1b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    downloadCount: 6000000,
+    type: "shader",
+    authorId: "user10",
+    authorName: "EminGT",
+    authorAvatarUrl: "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80",
+    minecraftVersions: ["1.16.5", "1.17.1", "1.18.2", "1.19.3", "1.20"],
+    createdAt: "2021-09-10T13:15:00Z",
+    updatedAt: "2023-04-20T11:55:00Z"
+  },
+  {
+    id: "mod4",
+    title: "BetterEnd",
+    description: "Расширение для биома Края с новыми блоками, мобами и биомами.",
+    thumbnailUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    downloadCount: 3500000,
+    type: "mod",
+    authorId: "user11",
+    authorName: "paulevs",
+    authorAvatarUrl: "https://images.unsplash.com/photo-1618077360395-f3068be8e001?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2080&q=80",
+    minecraftVersions: ["1.16.5", "1.17.1", "1.18.2", "1.19.3"],
+    createdAt: "2021-04-05T10:40:00Z",
+    updatedAt: "2022-12-18T09:30:00Z"
+  },
+  {
+    id: "datapack1",
+    title: "Vanilla Tweaks",
+    description: "Коллекция небольших улучшений, сохраняющих ванильный геймплей.",
+    thumbnailUrl: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    downloadCount: 9000000,
+    type: "data-pack",
+    authorId: "user12",
+    authorName: "Vanilla Tweaks Team",
+    authorAvatarUrl: "https://images.unsplash.com/photo-1629467057571-42d22d8f0cbd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2498&q=80",
+    minecraftVersions: ["1.16.5", "1.17.1", "1.18.2", "1.19.3", "1.20"],
+    createdAt: "2020-10-30T14:55:00Z",
+    updatedAt: "2023-05-15T10:10:00Z"
+  }
+];

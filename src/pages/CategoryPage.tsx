@@ -1,99 +1,55 @@
 import { useParams } from "react-router-dom";
-import { CONTENT_TYPE_LABELS, ContentType, MinecraftContent } from "@/lib/types";
+import { useEffect, useState } from "react";
 import ContentGrid from "@/components/ContentGrid";
+import { SAMPLE_CONTENT } from "@/lib/data";
+import { ContentItem, ContentType, CONTENT_TYPE_LABELS } from "@/lib/types";
 import CategoryFilter from "@/components/CategoryFilter";
-import { Box, Cpu, FileCode, FileImage, Flame, Layers, Map, Package, Palette } from "lucide-react";
-import { useMemo } from "react";
 
 export default function CategoryPage() {
   const { category } = useParams<{ category: string }>();
-  
-  const mockContent: MinecraftContent[] = useMemo(() => {
-    // В реальном приложении данные будут приходить с сервера
-    return Array.from({ length: 12 }, (_, i) => ({
-      id: `content-${i}`,
-      title: `Контент #${i + 1}`,
-      description: "Описание контента, которое может быть довольно длинным и содержать много информации об этом конкретном файле",
-      type: category as ContentType || "mod",
-      author: "Minecraft Мастер",
-      downloadCount: Math.floor(Math.random() * 10000),
-      createdAt: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
-      updatedAt: new Date(Date.now() - Math.random() * 1000000000).toISOString(),
-      imageUrl: `https://source.unsplash.com/random/300x200?minecraft&sig=${i}`,
-      downloadUrl: "#",
-      minecraftVersions: ["1.19.4", "1.20.1"],
-      fileSize: `${Math.floor(Math.random() * 100) + 1} МБ`,
-    }));
+  const [items, setItems] = useState<ContentItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Имитация загрузки данных
+    setLoading(true);
+    
+    setTimeout(() => {
+      let filteredItems = [...SAMPLE_CONTENT];
+      
+      // Если категория не "all", применяем фильтрацию
+      if (category && category !== 'all') {
+        filteredItems = SAMPLE_CONTENT.filter(
+          (item) => item.type === category
+        );
+      }
+      
+      setItems(filteredItems);
+      setLoading(false);
+    }, 500);
   }, [category]);
 
-  const getCategoryIcon = () => {
-    switch (category) {
-      case "mod":
-        return <Box className="h-5 w-5 mr-2" />;
-      case "resource-pack":
-        return <Palette className="h-5 w-5 mr-2" />;
-      case "data-pack":
-        return <FileCode className="h-5 w-5 mr-2" />;
-      case "skin":
-        return <FileImage className="h-5 w-5 mr-2" />;
-      case "shader":
-        return <Flame className="h-5 w-5 mr-2" />;
-      case "modpack":
-        return <Package className="h-5 w-5 mr-2" />;
-      case "shader-pack":
-        return <Layers className="h-5 w-5 mr-2" />;
-      case "resource-pack-collection":
-        return <Layers className="h-5 w-5 mr-2" />;
-      case "complete-pack":
-        return <Layers className="h-5 w-5 mr-2" />;
-      case "plugin":
-        return <Cpu className="h-5 w-5 mr-2" />;
-      case "map":
-        return <Map className="h-5 w-5 mr-2" />;
-      default:
-        return <Layers className="h-5 w-5 mr-2" />;
-    }
-  };
-
-  const getCategoryTitle = () => {
-    if (category === 'all') {
-      return 'Весь контент для Minecraft';
-    }
-    
-    if (!category || !(category in CONTENT_TYPE_LABELS)) {
-      return 'Контент для Minecraft';
-    }
-
-    const categoryLabel = CONTENT_TYPE_LABELS[category as ContentType];
-    
-    if (category === 'mod') {
-      return `${categoryLabel}ы для Minecraft`;
-    } else if (category === 'plugin') {
-      return `${categoryLabel}ы для Minecraft`;
-    } else if (category === 'map') {
-      return `${categoryLabel}ы для Minecraft`;
-    } else if (category === 'skin') {
-      return `${categoryLabel}ы для Minecraft`;
-    } else {
-      return `${categoryLabel}и для Minecraft`;
-    }
-  };
-
-  // В реальном приложении здесь будет фильтрация по категории из API
-  const filteredContent = category === 'all' 
-    ? mockContent 
-    : mockContent.filter(content => content.type === category);
+  const categoryTitle = category ? 
+    (category === 'all' ? 'Все материалы' : CONTENT_TYPE_LABELS[category as ContentType]) : 
+    'Материалы';
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-4 flex items-center">
-        {getCategoryIcon()}
-        {getCategoryTitle()}
-      </h1>
+    <div className="container py-8">
+      <h1 className="text-3xl font-bold mb-6">{categoryTitle}</h1>
       
       <CategoryFilter activeCategory={category as ContentType} />
       
-      <ContentGrid content={filteredContent} />
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
+      ) : (
+        <ContentGrid 
+          items={items} 
+          title={`${categoryTitle} (${items.length})`}
+          emptyMessage={`Контент категории "${categoryTitle}" не найден.`}
+        />
+      )}
     </div>
   );
 }

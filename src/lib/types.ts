@@ -1,77 +1,59 @@
 export type ContentType = 
-  | 'all'
-  | 'mod'
-  | 'resource-pack'
-  | 'data-pack'
-  | 'skin'
-  | 'shader'
-  | 'modpack'
-  | 'shader-pack'
-  | 'resource-pack-collection'
-  | 'complete-pack'
-  | 'plugin'
-  | 'map';
+  | "all"
+  | "mod" 
+  | "resource-pack" 
+  | "data-pack" 
+  | "skin" 
+  | "shader" 
+  | "modpack" 
+  | "shader-pack" 
+  | "resource-pack-collection" 
+  | "complete-pack" 
+  | "plugin" 
+  | "map";
 
-export type SortOption = 'newest' | 'popular';
+export const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
+  "all": "Всё",
+  "mod": "Моды",
+  "resource-pack": "Ресурс-паки",
+  "data-pack": "Датапаки",
+  "skin": "Скины",
+  "shader": "Шейдеры",
+  "modpack": "Сборки модов",
+  "shader-pack": "Сборки шейдеров",
+  "resource-pack-collection": "Сборки ресурс-паков",
+  "complete-pack": "Полные сборки",
+  "plugin": "Плагины",
+  "map": "Карты"
+};
 
-export type VideoType = 'youtube' | 'direct';
+export type SortOption = "popular" | "newest";
 
-export interface VideoContent {
-  type: VideoType;
-  url: string;
-  title?: string;
-  thumbnail?: string;
+export interface ContentItem {
+  id: string;
+  title: string;
+  description: string;
+  thumbnailUrl: string;
+  downloadCount: number;
+  type: ContentType;
+  authorId: string;
+  authorName: string;
+  authorAvatarUrl: string;
+  minecraftVersions: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface FileVersion {
   version: string;
-  url?: string;
   file?: File;
-  fileName: string;
-  fileSize: string;
+  fileUrl?: string;
 }
 
-export interface MinecraftContent {
-  id: string;
+export interface ContentUploaded {
   title: string;
   description: string;
   type: ContentType;
-  author: string;
-  downloadCount: number;
-  createdAt: string;
-  updatedAt: string;
-  imageUrl: string;
-  downloadUrl: string;
-  minecraftVersions: string[];
-  fileSize: string;
-  videos?: VideoContent[];
-  fileVersions?: FileVersion[];
-  screenshots?: string[];
+  thumbnail: File | null;
+  files: FileVersion[];
 }
-
-export const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
-  'all': 'Всё',
-  'mod': 'Мод',
-  'resource-pack': 'Ресурс-пак',
-  'data-pack': 'Дата-пак',
-  'skin': 'Скин',
-  'shader': 'Шейдер',
-  'modpack': 'Сборка модов',
-  'shader-pack': 'Сборка шейдеров',
-  'resource-pack-collection': 'Сборка ресурс-паков',
-  'complete-pack': 'Комплексная сборка',
-  'plugin': 'Плагин',
-  'map': 'Карта'
-};
-
-export const MINECRAFT_VERSIONS = [
-  '1.20.4', '1.20.3', '1.20.2', '1.20.1', '1.20', 
-  '1.19.4', '1.19.3', '1.19.2', '1.19.1', '1.19',
-  '1.18.2', '1.18.1', '1.18', 
-  '1.17.1', '1.17', 
-  '1.16.5', '1.16.4', '1.16.3', '1.16.2', '1.16.1', '1.16',
-  '1.15.2', '1.15.1', '1.15', 
-  '1.14.4', '1.14.3', '1.14.2', '1.14.1', '1.14',
-  '1.13.2', '1.13.1', '1.13',
-  '1.12.2', '1.12.1', '1.12'
-];

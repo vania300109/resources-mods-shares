@@ -1,7 +1,4 @@
-import Header from "@/components/Header";
-import Hero from "@/components/Hero";
 import ContentGrid from "@/components/ContentGrid";
-import Footer from "@/components/Footer";
 import { SAMPLE_CONTENT } from "@/lib/data";
 import { useState, useEffect } from "react";
 import { ContentType, SortOption } from "@/lib/types";
@@ -57,21 +54,11 @@ export default function Index() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
       <main>
-        <Hero />
-        
         <div className="container py-8">
           <h2 className="text-2xl font-bold mb-6">Найдите лучший контент для Minecraft</h2>
           
-          <CategoryFilter 
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-            selectedVersion={selectedVersion}
-            onVersionChange={setSelectedVersion}
-            sortOption={sortOption}
-            onSortChange={setSortOption}
-          />
+          <CategoryFilter activeCategory={selectedCategory} />
           
           <div className="mt-8">
             <ContentGrid 
@@ -88,7 +75,6 @@ export default function Index() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

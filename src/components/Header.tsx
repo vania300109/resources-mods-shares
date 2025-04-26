@@ -34,6 +34,9 @@ export default function Header() {
               <Link to="/" className="text-sm font-medium transition-colors hover:text-primary">
                 Главная
               </Link>
+              <Link to="/category/all" className="text-sm font-medium transition-colors hover:text-primary">
+                Всё
+              </Link>
               <Link to="/category/mod" className="text-sm font-medium transition-colors hover:text-primary">
                 Моды
               </Link>
@@ -45,9 +48,6 @@ export default function Header() {
               </Link>
               <Link to="/category/plugin" className="text-sm font-medium transition-colors hover:text-primary">
                 Плагины
-              </Link>
-              <Link to="/upload" className="text-sm font-medium transition-colors hover:text-primary">
-                Загрузить
               </Link>
             </nav>
           )}
