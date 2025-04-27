@@ -60,6 +60,17 @@ export const FileVersionForm = ({ versions, onAdd, onRemove }: FileVersionFormPr
     setFile(null);
   };
 
+  // Сбрасываем поля при переключении между URL и файлом
+  const handleToggleFileUrl = (checked: boolean) => {
+    setUseFileUrl(checked);
+    // Сбрасываем соответствующие поля при переключении
+    if (checked) {
+      setFile(null);
+    } else {
+      setFileUrl("");
+    }
+  };
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">Файлы для разных версий</h3>
@@ -80,7 +91,7 @@ export const FileVersionForm = ({ versions, onAdd, onRemove }: FileVersionFormPr
             <Switch
               id="use-url"
               checked={useFileUrl}
-              onCheckedChange={setUseFileUrl}
+              onCheckedChange={handleToggleFileUrl}
             />
             <Label htmlFor="use-url">{useFileUrl ? "Ссылка на файл" : "Загрузить файл"}</Label>
           </div>
@@ -103,6 +114,9 @@ export const FileVersionForm = ({ versions, onAdd, onRemove }: FileVersionFormPr
               id="file-upload"
               type="file"
               onChange={handleFileChange}
+              // Уберем value для неконтролируемого input file
+              // Сделаем ключ зависимым от file, чтобы сбрасывать поле при очистке
+              key={file ? "file-selected" : "file-empty"}
             />
             {file && (
               <p className="text-sm text-muted-foreground mt-1">
