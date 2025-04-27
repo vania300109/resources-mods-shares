@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import UploadForm from "@/components/UploadForm";
+import { UploadForm } from "@/components/upload-form";
 
 export default function Upload() {
   return (
