@@ -1,55 +1,36 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
 import ContentGrid from "@/components/ContentGrid";
-import { SAMPLE_CONTENT } from "@/lib/data";
-import { ContentItem, ContentType, CONTENT_TYPE_LABELS } from "@/lib/types";
+import { getMockContent } from "@/lib/data";
+import { CONTENT_TYPE_LABELS, ContentType } from "@/lib/types";
 import CategoryFilter from "@/components/CategoryFilter";
 
 export default function CategoryPage() {
   const { category } = useParams<{ category: string }>();
-  const [items, setItems] = useState<ContentItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const currentCategory = category as ContentType;
+  
+  // Получаем пустой массив контента
+  const content = getMockContent();
 
-  useEffect(() => {
-    // Имитация загрузки данных
-    setLoading(true);
-    
-    setTimeout(() => {
-      let filteredItems = [...SAMPLE_CONTENT];
-      
-      // Если категория не "all", применяем фильтрацию
-      if (category && category !== 'all') {
-        filteredItems = SAMPLE_CONTENT.filter(
-          (item) => item.type === category
-        );
-      }
-      
-      setItems(filteredItems);
-      setLoading(false);
-    }, 500);
-  }, [category]);
-
-  const categoryTitle = category ? 
-    (category === 'all' ? 'Все материалы' : CONTENT_TYPE_LABELS[category as ContentType]) : 
-    'Материалы';
+  // Фильтрация контента по выбранной категории
+  const filteredContent = 
+    currentCategory === "all" 
+      ? content 
+      : content.filter(item => item.type === currentCategory);
 
   return (
     <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-6">{categoryTitle}</h1>
+      <h2 className="text-2xl font-bold mb-6">
+        {CONTENT_TYPE_LABELS[currentCategory] || "Все материалы"}
+      </h2>
       
-      <CategoryFilter activeCategory={category as ContentType} />
+      <CategoryFilter activeCategory={currentCategory} />
       
-      {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-        </div>
-      ) : (
+      <div className="mt-8">
         <ContentGrid 
-          items={items} 
-          title={`${categoryTitle} (${items.length})`}
-          emptyMessage={`Контент категории "${categoryTitle}" не найден.`}
+          items={filteredContent}
+          emptyMessage={`В категории "${CONTENT_TYPE_LABELS[currentCategory] || 'Все материалы'}" пока нет контента. Станьте первым, кто добавит его!`}
         />
-      )}
+      </div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import ContentGrid from "@/components/ContentGrid";
-import { SAMPLE_CONTENT } from "@/lib/data";
+import { getMockContent } from "@/lib/data";
 import { useState, useEffect } from "react";
 import { ContentType, SortOption } from "@/lib/types";
 import CategoryFilter from "@/components/CategoryFilter";
@@ -28,8 +28,11 @@ export default function Index() {
     localStorage.setItem("sortOption", sortOption);
   }, [selectedCategory, selectedVersion, sortOption]);
   
+  // Получаем пустой массив контента
+  const content = getMockContent();
+  
   // Фильтрация контента
-  let filteredContent = [...SAMPLE_CONTENT];
+  let filteredContent = [...content];
   
   // Фильтр по категории
   if (selectedCategory !== "all") {
@@ -69,7 +72,7 @@ export default function Index() {
                   : "Популярные материалы"
               }
               emptyMessage={
-                "По вашему запросу ничего не найдено. Попробуйте изменить параметры фильтрации."
+                "В данный момент контент не доступен. Загрузите первым свой контент!"
               }
             />
           </div>
