@@ -10,12 +10,13 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 import { Toaster } from "@/components/ui/toaster";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import IntroModal from "@/components/IntroModal";
 import "./App.css";
 
 function App() {
   // Функция для перезагрузки страницы после 3 минут бездействия
   useEffect(() => {
-    let inactivityTimer: NodeJS.Timeout;
+    let inactivityTimer: ReturnType<typeof setTimeout>;
     
     const resetTimer = () => {
       // Очищаем предыдущий таймер
@@ -50,7 +51,7 @@ function App() {
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
       <div className="flex flex-col min-h-screen">
         <Header />
-        <main className="flex-1 container mx-auto px-4 py-6">
+        <main className="flex-1">
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/category/:category" element={<CategoryPage />} />
@@ -62,6 +63,7 @@ function App() {
         </main>
         <Footer />
       </div>
+      <IntroModal />
       <Toaster />
     </ThemeProvider>
   );

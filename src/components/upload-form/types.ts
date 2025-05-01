@@ -15,7 +15,7 @@ export const formSchema = z.object({
   }),
   type: z.string().min(1, {
     message: "Выберите тип контента.",
-  }),
+  }).default("mod"),
 });
 
 // Тип для данных формы

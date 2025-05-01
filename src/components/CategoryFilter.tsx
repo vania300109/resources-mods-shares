@@ -1,15 +1,14 @@
 import { CONTENT_TYPE_LABELS, ContentType } from "@/lib/types";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Box, Cpu, FileCode, FileImage, Flame, Layers, Map, Package, Palette, ScrollText } from "lucide-react";
 
 interface CategoryFilterProps {
-  activeCategory?: ContentType;
+  activeCategory: ContentType;
+  onCategoryChange?: (category: ContentType) => void;
 }
 
 const getCategoryIcon = (type: ContentType) => {
   switch (type) {
-    case "all":
-      return <Layers className="h-4 w-4 mr-2" />;
     case "mod":
       return <Box className="h-4 w-4 mr-2" />;
     case "resource-pack":
@@ -37,9 +36,12 @@ const getCategoryIcon = (type: ContentType) => {
   }
 };
 
-export default function CategoryFilter({ activeCategory }: CategoryFilterProps) {
-  const params = useParams();
-  const currentCategory = activeCategory || (params.category as ContentType);
+export default function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFilterProps) {
+  const handleCategoryClick = (category: ContentType) => {
+    if (onCategoryChange) {
+      onCategoryChange(category);
+    }
+  };
 
   return (
     <div className="pb-4 mb-6">
@@ -48,8 +50,9 @@ export default function CategoryFilter({ activeCategory }: CategoryFilterProps) 
           <Link
             key={type}
             to={`/category/${type}`}
+            onClick={() => handleCategoryClick(type as ContentType)}
             className={`flex items-center px-3 py-2 text-sm rounded-md ${
-              currentCategory === type 
+              activeCategory === type 
                 ? "bg-primary text-primary-foreground" 
                 : "bg-card hover:bg-accent"
             }`}

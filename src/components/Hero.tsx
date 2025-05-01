@@ -13,7 +13,7 @@ export default function Hero() {
             Скачивайте и загружайте модификации для любимой игры. Улучшайте графику, геймплей и делитесь своими творениями.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 mt-2">
-            <Link to="/mods">
+            <Link to="/category/mod">
               <Button size="lg">Найти моды</Button>
             </Link>
             <Link to="/upload">

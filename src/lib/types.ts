@@ -1,5 +1,4 @@
 export type ContentType = 
-  | "all"
   | "mod" 
   | "resource-pack" 
   | "data-pack" 
@@ -13,7 +12,6 @@ export type ContentType =
   | "map";
 
 export const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
-  "all": "Всё",
   "mod": "Моды",
   "resource-pack": "Ресурс-паки",
   "data-pack": "Датапаки",
@@ -57,3 +55,12 @@ export interface ContentUploaded {
   thumbnail: File | null;
   files: FileVersion[];
 }
+
+export interface VideoContent {
+  type: "youtube" | "direct";
+  url: string;
+  title: string;
+  thumbnail?: string;
+}
+
+export type VideoType = "youtube" | "direct";

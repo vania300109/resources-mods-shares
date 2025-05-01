@@ -1,4 +1,4 @@
-import { CONTENT_TYPE_LABELS } from "@/lib/types";
+import { CONTENT_TYPE_LABELS, ContentType } from "@/lib/types";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -51,7 +51,10 @@ export const MainInfoForm = ({ form }: MainInfoFormProps) => {
         render={({ field }) => (
           <FormItem>
             <FormLabel>Тип контента</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select 
+              onValueChange={field.onChange} 
+              value={field.value || "mod"}
+            >
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Выберите тип контента" />
@@ -59,11 +62,9 @@ export const MainInfoForm = ({ form }: MainInfoFormProps) => {
               </FormControl>
               <SelectContent>
                 {Object.entries(CONTENT_TYPE_LABELS).map(([value, label]) => (
-                  value !== 'all' && (
-                    <SelectItem key={value} value={value}>
-                      {label}
-                    </SelectItem>
-                  )
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>

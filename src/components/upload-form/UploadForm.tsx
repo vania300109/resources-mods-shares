@@ -23,7 +23,7 @@ export default function UploadForm() {
     defaultValues: {
       title: "",
       description: "",
-      type: "",
+      type: "mod",
     },
   });
 
@@ -93,6 +93,16 @@ export default function UploadForm() {
       title: "Контент загружен!",
       description: "Ваш контент был успешно загружен и отправлен на модерацию.",
     });
+    
+    // Сбрасываем форму после успешной отправки
+    form.reset({
+      title: "",
+      description: "",
+      type: "mod",
+    });
+    setThumbnail(null);
+    setThumbnailPreview(null);
+    setVersions([]);
   };
 
   return (

@@ -5,5 +5,18 @@ export function getMockContent(): ContentItem[] {
   return []; // Возвращаем пустой массив, чтобы изначально не было материалов
 }
 
-// Образец контента, который можно будет использовать позже
-export const SAMPLE_CONTENT: ContentItem[] = [];
+// Пустая версия контента, соответствующая интерфейсу ContentItem
+export const createEmptyContent = (type: ContentType = "mod"): ContentItem => ({
+  id: "",
+  title: "",
+  description: "",
+  thumbnailUrl: "",
+  downloadCount: 0,
+  type,
+  authorId: "",
+  authorName: "",
+  authorAvatarUrl: "",
+  minecraftVersions: ["1.19", "1.20"],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString()
+});
