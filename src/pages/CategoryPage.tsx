@@ -2,18 +2,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import ContentGrid from "@/components/ContentGrid";
 import { CONTENT_TYPE_LABELS, ContentType } from "@/lib/types";
-import ContentGrid from "@/components/ContentGrid";
-import { CONTENT_TYPE_LABELS, ContentType } from "@/lib/types";
 import CategoryFilter from "@/components/CategoryFilter";
 import { getMockContent } from "@/lib/data";
 
+export default function CategoryPage() {
   const { category } = useParams<{ category: string }>();
   const navigate = useNavigate();
   
-  // Проверяем и приводим к типу ContentType с дефолтным значением для безопасности
-  const currentCategory = (category && CONTENT_TYPE_LABELS[category as ContentType]) 
-    ? (category as ContentType) 
-    : "mod";
+  // Проверяем и приводим к типу ContentType
+  const currentCategory = (category as ContentType) || "mod";
   
   useEffect(() => {
     // Проверяем, существует ли категория
@@ -23,6 +20,11 @@ import { getMockContent } from "@/lib/data";
     }
   }, [category, navigate]);
 
+  // Если категория не валидна, возвращаем null пока происходит редирект
+  if (!category || !CONTENT_TYPE_LABELS[category as ContentType]) {
+    return null;
+  }
+  
   // Получаем контент и фильтруем по категории
   const content = getMockContent();
   const filteredContent = content.filter(item => item.type === currentCategory);
