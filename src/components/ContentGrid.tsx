@@ -1,53 +1,47 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Link } from "react-router-dom";
-import { MinecraftContent, CONTENT_TYPE_LABELS } from "@/lib/types";
-import { Badge } from "@/components/ui/badge";
-import { Download, Calendar } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { ru } from "date-fns/locale";
+import { ContentCard } from "@/components/ContentCard";
+import { ContentItem } from "@/lib/types";
 
 interface ContentGridProps {
-  items: MinecraftContent[];
-  title?: string;
+  items: ContentItem[];
+  title: string;
   emptyMessage?: string;
 }
 
-export default function ContentGrid({ items, title, emptyMessage = "Ничего не найдено" }: ContentGridProps) {
+export default function ContentGrid({ 
+  items, 
+  title, 
+  emptyMessage = "Контент не найден" 
+}: ContentGridProps) {
   return (
-    <div>
-      {title && <h2 className="text-2xl font-bold mb-6">{title}</h2>}
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-xl font-bold">{title}</h3>
+      </div>
       
-      {items.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">{emptyMessage}</p>
+      {items.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {items.map(item => (
+            <Link key={item.id} to={`/content/${item.id}`}>
+              <ContentCard item={item} />
+            </Link>
+          ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {items.map((item) => (
-            <Link key={item.id} to={`/content/${item.id}`}>
-              <Card className="overflow-hidden h-full transition-all hover:shadow-md">
-                <div className="relative">
-                  <AspectRatio ratio={16/9}>
-                    <img 
-                      src={item.imageUrl || "/placeholder.svg"} 
-                      alt={item.title}
-                      className="object-cover w-full h-full"
-                    />
-                  </AspectRatio>
-                  <div className="absolute top-2 right-2">
-                    <Badge variant="secondary" className="font-normal">
-                      {CONTENT_TYPE_LABELS[item.type]}
-                    </Badge>
-                  </div>
-                </div>
-                
-                <CardHeader className="p-4 pb-0">
-                  <CardTitle className="line-clamp-1 text-lg">{item.title}</CardTitle>
-                </CardHeader>
-                
-                <CardContent className="p-4 text-sm space-y-2">
-                  <p className="line-clamp-2 text-muted-foreground text-xs">{item.description}</p>
+        <div className="bg-muted p-8 rounded-lg text-center">
+          <p className="text-muted-foreground">{emptyMessage}</p>
+          <Link 
+            to="/upload" 
+            className="inline-block mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          >
+            Загрузить контент
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
                   
                   <div className="flex flex-wrap gap-1">
                     {item.minecraftVersions.slice(0, 3).map(version => (

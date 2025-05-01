@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { ContentType, SortOption, CONTENT_TYPE_LABELS } from "@/lib/types";
 import CategoryFilter from "@/components/CategoryFilter";
+import CategoryFilter from "@/components/CategoryFilter";
 import Hero from "@/components/Hero";
 import ContentGrid from "@/components/ContentGrid";
 import { getMockContent } from "@/lib/data";
 
-export default function Index() {
   // Загрузка сохраненных настроек из localStorage с проверкой на валидность
   const [selectedCategory, setSelectedCategory] = useState<ContentType>(() => {
     const saved = localStorage.getItem("selectedCategory");

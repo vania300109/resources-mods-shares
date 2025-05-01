@@ -2,10 +2,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import ContentGrid from "@/components/ContentGrid";
 import { CONTENT_TYPE_LABELS, ContentType } from "@/lib/types";
+import ContentGrid from "@/components/ContentGrid";
+import { CONTENT_TYPE_LABELS, ContentType } from "@/lib/types";
 import CategoryFilter from "@/components/CategoryFilter";
 import { getMockContent } from "@/lib/data";
 
-export default function CategoryPage() {
   const { category } = useParams<{ category: string }>();
   const navigate = useNavigate();
   

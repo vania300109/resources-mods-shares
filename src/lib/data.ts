@@ -20,3 +20,6 @@ export const createEmptyContent = (type: ContentType = "mod"): ContentItem => ({
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString()
 });
+
+// Пример контента для тестирования (убираем экспорт SAMPLE_CONTENT)
+export const SAMPLE_ITEMS: ContentItem[] = [];
