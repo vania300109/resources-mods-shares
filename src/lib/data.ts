@@ -15,6 +15,16 @@ try {
 
 // Функция для получения всего контента
 export function getMockContent(): ContentItem[] {
+  // Заново загружаем контент при каждом вызове, чтобы отражать изменения
+  try {
+    const savedContent = localStorage.getItem('userCreatedContent');
+    if (savedContent) {
+      userCreatedContent = JSON.parse(savedContent);
+    }
+  } catch (error) {
+    console.error('Ошибка при загрузке контента:', error);
+  }
+  
   return [...userCreatedContent, ...SAMPLE_ITEMS];
 }
 

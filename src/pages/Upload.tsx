@@ -1,6 +1,4 @@
 import { useEffect } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { UploadForm } from "@/components/upload-form";
 import { useNavigate } from "react-router-dom";
 
@@ -15,8 +13,7 @@ export default function Upload() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
+    <div>
       <main className="container py-10">
         <h1 className="font-bold text-3xl mb-6 text-center">Загрузка контента</h1>
         <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -24,7 +21,6 @@ export default function Upload() {
         </p>
         <UploadForm />
       </main>
-      <Footer />
     </div>
   );
 }

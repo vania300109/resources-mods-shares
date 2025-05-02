@@ -4,8 +4,6 @@ import CategoryFilter from "@/components/CategoryFilter";
 import Hero from "@/components/Hero";
 import ContentGrid from "@/components/ContentGrid";
 import { getMockContent } from "@/lib/data";
-import Header from "@/components/Header"; 
-import Footer from "@/components/Footer";
 
 export default function Index() {
   // Загрузка сохраненных настроек из localStorage с проверкой на валидность
@@ -33,6 +31,9 @@ export default function Index() {
   // Обновляем контент при монтировании компонента и при изменении выбранных фильтров
   useEffect(() => {
     setContent(getMockContent());
+    
+    // Сбрасываем флаг интро для демонстрации
+    localStorage.removeItem("introShown");
   }, []);
 
   // Сохранение настроек в localStorage
@@ -52,8 +53,7 @@ export default function Index() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
+    <div>
       <Hero />
       <main>
         <div className="container py-8">
@@ -79,7 +79,6 @@ export default function Index() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }
