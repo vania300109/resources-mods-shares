@@ -1,8 +1,33 @@
 import { ContentItem, ContentType, VideoContent } from "./types";
 
-// Функция для имитации API получения контента
+// Хранилище контента, созданного пользователями
+let userCreatedContent: ContentItem[] = [];
+
+// Инициализация контента из localStorage при загрузке
+try {
+  const savedContent = localStorage.getItem('userCreatedContent');
+  if (savedContent) {
+    userCreatedContent = JSON.parse(savedContent);
+  }
+} catch (error) {
+  console.error('Ошибка при загрузке контента:', error);
+}
+
+// Функция для получения всего контента
 export function getMockContent(): ContentItem[] {
-  return []; // Возвращаем пустой массив, чтобы изначально не было материалов
+  return [...userCreatedContent, ...SAMPLE_ITEMS];
+}
+
+// Функция для сохранения нового контента
+export function saveNewContent(content: ContentItem): void {
+  userCreatedContent = [content, ...userCreatedContent];
+  
+  // Сохраняем в localStorage
+  try {
+    localStorage.setItem('userCreatedContent', JSON.stringify(userCreatedContent));
+  } catch (error) {
+    console.error('Ошибка при сохранении контента:', error);
+  }
 }
 
 // Пустая версия контента, соответствующая интерфейсу ContentItem

@@ -1,8 +1,19 @@
+import { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { UploadForm } from "@/components/upload-form";
+import { useNavigate } from "react-router-dom";
 
 export default function Upload() {
+  const navigate = useNavigate();
+  
+  // Используем useEffect для проверки, был ли пользователь перенаправлен с этой страницы
+  // чтобы избежать двойного рендера компонентов
+  useEffect(() => {
+    // Сбрасываем флаг перенаправления, если он был установлен
+    localStorage.removeItem("redirectedToUpload");
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />

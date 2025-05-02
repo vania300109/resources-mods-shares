@@ -4,6 +4,8 @@ import CategoryFilter from "@/components/CategoryFilter";
 import Hero from "@/components/Hero";
 import ContentGrid from "@/components/ContentGrid";
 import { getMockContent } from "@/lib/data";
+import Header from "@/components/Header"; 
+import Footer from "@/components/Footer";
 
 export default function Index() {
   // Загрузка сохраненных настроек из localStorage с проверкой на валидность
@@ -25,6 +27,14 @@ export default function Index() {
     return (saved === "newest") ? "newest" : "popular";
   });
 
+  // Получаем контент и отслеживаем его изменения
+  const [content, setContent] = useState(getMockContent());
+  
+  // Обновляем контент при монтировании компонента и при изменении выбранных фильтров
+  useEffect(() => {
+    setContent(getMockContent());
+  }, []);
+
   // Сохранение настроек в localStorage
   useEffect(() => {
     localStorage.setItem("selectedCategory", selectedCategory);
@@ -32,11 +42,10 @@ export default function Index() {
     localStorage.setItem("sortOption", sortOption);
   }, [selectedCategory, selectedVersion, sortOption]);
   
-  // Получаем пустой массив контента
-  const content = getMockContent();
-  
   // Фильтрация контента по выбранной категории
-  const filteredContent = content.filter(item => item.type === selectedCategory);
+  const filteredContent = content.filter(item => 
+    selectedCategory === "all" || item.type === selectedCategory
+  );
 
   const handleCategoryChange = (category: ContentType) => {
     setSelectedCategory(category);
@@ -44,6 +53,7 @@ export default function Index() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <Header />
       <Hero />
       <main>
         <div className="container py-8">
@@ -69,6 +79,7 @@ export default function Index() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
