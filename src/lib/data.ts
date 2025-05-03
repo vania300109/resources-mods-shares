@@ -1,7 +1,10 @@
-import { ContentItem, ContentType, VideoContent } from "./types";
+import { ContentItem, ContentType, VideoContent, Comment } from "./types";
 
 // Хранилище контента, созданного пользователями
 let userCreatedContent: ContentItem[] = [];
+
+// Хранилище комментариев
+let comments: Comment[] = [];
 
 // Инициализация контента из localStorage при загрузке
 try {
@@ -9,8 +12,13 @@ try {
   if (savedContent) {
     userCreatedContent = JSON.parse(savedContent);
   }
+  
+  const savedComments = localStorage.getItem('comments');
+  if (savedComments) {
+    comments = JSON.parse(savedComments);
+  }
 } catch (error) {
-  console.error('Ошибка при загрузке контента:', error);
+  console.error('Ошибка при загрузке данных:', error);
 }
 
 // Функция для получения всего контента
@@ -25,7 +33,29 @@ export function getMockContent(): ContentItem[] {
     console.error('Ошибка при загрузке контента:', error);
   }
   
-  return [...userCreatedContent, ...SAMPLE_ITEMS];
+  // Обновляем рейтинги для каждого элемента
+  const contentWithRatings = [...userCreatedContent, ...SAMPLE_ITEMS].map(item => {
+    const itemComments = getCommentsByContentId(item.id);
+    const ratings = itemComments.map(comment => comment.rating).filter(rating => rating > 0);
+    
+    const averageRating = ratings.length > 0 
+      ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length 
+      : undefined;
+    
+    return {
+      ...item,
+      averageRating,
+      ratingsCount: ratings.length
+    };
+  });
+  
+  return contentWithRatings;
+}
+
+// Функция для получения контента по ID
+export function getContentById(id: string): ContentItem | undefined {
+  const allContent = getMockContent();
+  return allContent.find(item => item.id === id);
 }
 
 // Функция для сохранения нового контента
@@ -37,6 +67,32 @@ export function saveNewContent(content: ContentItem): void {
     localStorage.setItem('userCreatedContent', JSON.stringify(userCreatedContent));
   } catch (error) {
     console.error('Ошибка при сохранении контента:', error);
+  }
+}
+
+// Функции для работы с комментариями
+export function getCommentsByContentId(contentId: string): Comment[] {
+  try {
+    const savedComments = localStorage.getItem('comments');
+    if (savedComments) {
+      comments = JSON.parse(savedComments);
+    }
+  } catch (error) {
+    console.error('Ошибка при загрузке комментариев:', error);
+  }
+  
+  return comments.filter(comment => comment.contentId === contentId)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+// Добавление нового комментария
+export function addComment(comment: Comment): void {
+  comments = [comment, ...comments];
+  
+  try {
+    localStorage.setItem('comments', JSON.stringify(comments));
+  } catch (error) {
+    console.error('Ошибка при сохранении комментария:', error);
   }
 }
 
@@ -86,3 +142,8 @@ export const SAMPLE_CONTENT = [
 
 // Пример контента для тестирования
 export const SAMPLE_ITEMS: ContentItem[] = [];
+
+// Генерация уникального ID
+export function generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+}

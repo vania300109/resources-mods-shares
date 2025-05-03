@@ -27,6 +27,17 @@ export const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
 
 export type SortOption = "popular" | "newest";
 
+export interface Comment {
+  id: string;
+  contentId: string;
+  author: string;
+  authorId: string;
+  authorAvatarUrl?: string;
+  text: string;
+  createdAt: string;
+  rating: number; // Рейтинг от 1 до 5
+}
+
 export interface ContentItem {
   id: string;
   title: string;
@@ -40,6 +51,8 @@ export interface ContentItem {
   minecraftVersions: string[];
   createdAt: string;
   updatedAt: string;
+  averageRating?: number; // Средний рейтинг материала
+  ratingsCount?: number; // Количество оценок
 }
 
 export interface FileVersion {

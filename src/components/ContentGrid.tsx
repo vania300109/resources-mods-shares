@@ -1,100 +1,79 @@
 import { Link } from "react-router-dom";
-import ContentCard from "@/components/ContentCard";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { ContentItem } from "@/lib/types";
-import { useState } from "react";
-import { Button } from "./ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ContentGridProps {
   items: ContentItem[];
   title: string;
-  emptyMessage?: string;
+  emptyMessage: string;
 }
 
-export default function ContentGrid({ 
-  items, 
-  title, 
-  emptyMessage = "Контент не найден" 
-}: ContentGridProps) {
-  const pageSize = 12; // Ограничиваем до 12 элементов на странице
-  const [currentPage, setCurrentPage] = useState(1);
-  
-  // Вычисляем общее количество страниц
-  const totalPages = Math.ceil(items.length / pageSize);
-  
-  // Получаем элементы для текущей страницы
-  const currentItems = items.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-  
-  // Обработчики пагинации
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(prev => prev + 1);
-    }
-  };
-  
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(prev => prev - 1);
-    }
-  };
+export default function ContentGrid({ items, title, emptyMessage }: ContentGridProps) {
+  if (items.length === 0) {
+    return (
+      <div className="text-center py-10 border rounded-lg">
+        <h3 className="text-xl font-semibold mb-2">{title}</h3>
+        <p className="text-muted-foreground">{emptyMessage}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-xl font-bold">{title}</h3>
-      </div>
-      
-      {items.length > 0 ? (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {currentItems.map(item => (
-              <Link key={item.id} to={`/content/${item.id}`}>
-                <ContentCard item={item} />
-              </Link>
-            ))}
-          </div>
-          
-          {/* Пагинация */}
-          {totalPages > 1 && (
-            <div className="flex justify-center mt-6 gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handlePrevPage}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4 mr-1" />
-                Назад
-              </Button>
-              <span className="px-4 py-2">
-                Страница {currentPage} из {totalPages}
-              </span>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-              >
-                Вперед
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
-          )}
-        </>
-      ) : (
-        <div className="bg-muted p-8 rounded-lg text-center">
-          <p className="text-muted-foreground">{emptyMessage}</p>
-          <Link 
-            to="/upload" 
-            className="inline-block mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-          >
-            Загрузить контент
+    <div>
+      <h3 className="text-xl font-semibold mb-4">{title}</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {items.map((item) => (
+          <Link to={`/content/${item.id}`} key={item.id}>
+            <Card className="h-full overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+              <div className="aspect-video relative overflow-hidden">
+                <img 
+                  src={item.thumbnailUrl || 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?q=80&w=2070'} 
+                  alt={item.title} 
+                  className="object-cover w-full h-full"
+                />
+                <Badge className="absolute top-2 right-2">
+                  {item.type}
+                </Badge>
+              </div>
+              <CardContent className="p-4">
+                <h4 className="font-semibold truncate">{item.title}</h4>
+                <p className="text-sm text-muted-foreground line-clamp-2 h-10">
+                  {item.description}
+                </p>
+              </CardContent>
+              <CardFooter className="p-4 pt-0 flex justify-between items-center">
+                <div className="flex items-center space-x-2">
+                  <img
+                    src={item.authorAvatarUrl || 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=1780'}
+                    alt={item.authorName}
+                    className="w-6 h-6 rounded-full object-cover"
+                  />
+                  <span className="text-xs">{item.authorName}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {item.averageRating !== undefined && (
+                    <div className="flex items-center text-yellow-500">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                      <span className="text-xs ml-1">{item.averageRating.toFixed(1)}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center text-muted-foreground">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    <span className="text-xs ml-1">{item.downloadCount}</span>
+                  </div>
+                </div>
+              </CardFooter>
+            </Card>
           </Link>
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   );
 }

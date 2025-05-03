@@ -1,147 +1,141 @@
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { FileVersion, MinecraftContent } from "@/lib/types";
-import { Download, Calendar, User, FileBox, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
-import VideoGallery from "./VideoGallery";
+import { getContentById } from "@/lib/data";
+import { ContentItem } from "@/lib/types";
+import CommentSection from "@/components/CommentSection";
 
-interface ContentDetailProps {
-  content: MinecraftContent;
-}
+export default function ContentDetail() {
+  const { id } = useParams<{ id: string }>();
+  const [content, setContent] = useState<ContentItem | null>(null);
+  const [loading, setLoading] = useState(true);
 
-function VersionDownloadCard({ version }: { version: FileVersion }) {
-  return (
-    <Card className="mb-4">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-medium">Версия Minecraft: {version.version}</h3>
-            <p className="text-sm text-muted-foreground">
-              {version.fileName} ({version.fileSize})
-            </p>
-          </div>
-          <Button asChild>
-            <a href={version.url} target="_blank" rel="noopener noreferrer">
-              <Download className="mr-2 h-4 w-4" />
-              Скачать
-            </a>
-          </Button>
+  useEffect(() => {
+    if (id) {
+      const foundContent = getContentById(id);
+      setContent(foundContent || null);
+      setLoading(false);
+    }
+  }, [id]);
+
+  const handleDownload = () => {
+    // Имитация скачивания
+    alert("Скачивание началось!");
+    
+    // В реальном приложении здесь был бы код для скачивания файла
+    // и увеличения счетчика скачиваний
+  };
+
+  if (loading) {
+    return (
+      <div className="container py-12 text-center">
+        <div className="flex items-center justify-center space-x-2">
+          <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+          <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+          <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
         </div>
-      </CardContent>
-    </Card>
-  );
-}
+      </div>
+    );
+  }
 
-export default function ContentDetail({ content }: ContentDetailProps) {
+  if (!content) {
+    return (
+      <div className="container py-12 text-center">
+        <h2 className="text-2xl font-bold mb-4">Контент не найден</h2>
+        <p className="text-muted-foreground mb-6">
+          Запрашиваемый материал не существует или был удален.
+        </p>
+        <Button variant="outline" onClick={() => window.history.back()}>
+          Вернуться назад
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="container py-8">
-      <div className="flex flex-col md:flex-row md:space-x-8 space-y-4 md:space-y-0">
-        <div className="md:w-2/3">
-          <Link to="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Назад
-          </Link>
-          
-          <h1 className="text-3xl font-bold">{content.title}</h1>
-          
-          <div className="flex flex-wrap items-center gap-4 mt-2 mb-6">
-            <div className="flex items-center text-sm text-muted-foreground">
-              <User className="mr-1 h-4 w-4" />
-              Автор: {content.author}
-            </div>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Calendar className="mr-1 h-4 w-4" />
-              Дата: {new Date(content.createdAt).toLocaleDateString()}
-            </div>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <FileBox className="mr-1 h-4 w-4" />
-              Размер: {content.fileSize}
-            </div>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Download className="mr-1 h-4 w-4" />
-              Загрузок: {content.downloadCount.toLocaleString()}
-            </div>
+      <div className="grid md:grid-cols-3 gap-8">
+        {/* Левая колонка с изображением */}
+        <div className="md:col-span-1">
+          <div className="rounded-lg overflow-hidden aspect-video mb-4">
+            <img 
+              src={content.thumbnailUrl || "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?q=80&w=2070"} 
+              alt={content.title} 
+              className="w-full h-full object-cover"
+            />
           </div>
-          
-          <div className="prose dark:prose-invert max-w-none mb-8">
-            <p>{content.description}</p>
-          </div>
-          
-          {content.screenshots && content.screenshots.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-xl font-bold mb-4">Скриншоты</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {content.screenshots.map((url, index) => (
-                  <a 
-                    key={index} 
-                    href={url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="block overflow-hidden rounded-lg border"
-                  >
-                    <img 
-                      src={url} 
-                      alt={`Скриншот ${index + 1}`} 
-                      className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300" 
-                    />
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {content.videos && content.videos.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-xl font-bold mb-4">Видео</h2>
-              <VideoGallery videos={content.videos} />
-            </div>
-          )}
-        </div>
-        
-        <div className="md:w-1/3">
-          <Card>
-            <CardContent className="p-6">
-              <div className="aspect-video rounded-lg overflow-hidden mb-4">
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
                 <img 
-                  src={content.imageUrl} 
-                  alt={content.title} 
-                  className="w-full h-full object-cover"
+                  src={content.authorAvatarUrl || "https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=1780"} 
+                  alt={content.authorName}
+                  className="w-10 h-10 rounded-full object-cover"
                 />
-              </div>
-              
-              <div className="space-y-4">
                 <div>
-                  <h3 className="font-medium mb-2">Версии Minecraft:</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {content.minecraftVersions.map((version) => (
-                      <div
-                        key={version}
-                        className="bg-secondary text-secondary-foreground px-2 py-1 rounded text-xs"
-                      >
-                        {version}
-                      </div>
-                    ))}
-                  </div>
+                  <p className="font-medium">{content.authorName}</p>
+                  <p className="text-sm text-muted-foreground">Автор</p>
                 </div>
-                
-                {content.fileVersions && content.fileVersions.length > 0 ? (
-                  <div className="space-y-3">
-                    <h3 className="font-medium">Скачать для разных версий:</h3>
-                    {content.fileVersions.map((version, index) => (
-                      <VersionDownloadCard key={index} version={version} />
-                    ))}
-                  </div>
-                ) : (
-                  <Button asChild className="w-full">
-                    <a href={content.downloadUrl} target="_blank" rel="noopener noreferrer">
-                      <Download className="mr-2 h-4 w-4" />
-                      Скачать
-                    </a>
-                  </Button>
-                )}
               </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Badge>{content.type}</Badge>
+              <Badge variant="outline" className="flex gap-1 items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                <span>{content.downloadCount}</span>
+              </Badge>
+              {content.averageRating && (
+                <Badge variant="secondary" className="flex gap-1 items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                  <span>{content.averageRating.toFixed(1)}</span>
+                </Badge>
+              )}
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {content.minecraftVersions?.map((version) => (
+                <Badge key={version} variant="outline">
+                  {version}
+                </Badge>
+              ))}
+            </div>
+
+            <Button className="w-full" onClick={handleDownload}>
+              <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Скачать
+            </Button>
+          </div>
+        </div>
+
+        {/* Правая колонка с описанием и комментариями */}
+        <div className="md:col-span-2">
+          <h1 className="text-3xl font-bold mb-4">{content.title}</h1>
+          
+          <Card className="mb-8">
+            <CardContent className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Описание</h2>
+              <p className="whitespace-pre-line">
+                {content.description || "Описание отсутствует"}
+              </p>
             </CardContent>
           </Card>
+          
+          {/* Секция комментариев */}
+          <CommentSection contentId={content.id} />
         </div>
       </div>
     </div>
