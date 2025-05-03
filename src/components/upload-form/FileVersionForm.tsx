@@ -7,6 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { VersionItem } from "./VersionItem";
+import { 
+  Alert,
+  AlertDescription,
+  AlertTitle
+} from "@/components/ui/alert";
 
 export const FileVersionForm = ({ versions, onAdd, onRemove }: FileVersionFormProps) => {
   const [version, setVersion] = useState("");
@@ -49,15 +54,67 @@ export const FileVersionForm = ({ versions, onAdd, onRemove }: FileVersionFormPr
       return;
     }
 
+    // Проверяем URL файла для скачивания
+    if (useFileUrl && fileUrl) {
+      const validFileHostings = [
+        "wetransfer.com",
+        "files.io",
+        "drive.google.com",
+        "dropbox.com",
+        "mediafire.com",
+        "mega.nz",
+        "yandex.ru/disk",
+        "cloud.mail.ru"
+      ];
+
+      // Проверяем, содержит ли URL один из допустимых хостингов
+      const isValidFileUrl = validFileHostings.some(host => fileUrl.includes(host));
+
+      if (!isValidFileUrl) {
+        toast({
+          title: "Предупреждение",
+          description: "Ссылка должна быть на проверенный файловый хостинг и вести на скачивание файла",
+          variant: "destructive",
+        });
+        // Разрешаем продолжить, но с предупреждением
+      }
+    }
+
     const newVersion: FileVersion = {
       version,
-      ...(useFileUrl ? { fileUrl } : { file: file! }),
+      ...(useFileUrl ? { fileUrl, fileName: getFileNameFromUrl(fileUrl) } : { file: file!, fileName: file!.name, fileSize: formatFileSize(file!.size) }),
     };
 
     onAdd(newVersion);
     setVersion("");
     setFileUrl("");
     setFile(null);
+  };
+
+  // Получаем имя файла из URL
+  const getFileNameFromUrl = (url: string): string => {
+    try {
+      const urlObj = new URL(url);
+      const pathSegments = urlObj.pathname.split('/');
+      const lastSegment = pathSegments[pathSegments.length - 1];
+
+      // Если последний сегмент содержит расширение файла, возвращаем его
+      if (lastSegment.includes('.')) {
+        return lastSegment;
+      }
+      
+      // Иначе возвращаем общее название
+      return `file-${version}.zip`;
+    } catch (e) {
+      return `file-${version}.zip`;
+    }
+  };
+
+  // Форматируем размер файла
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return bytes + ' bytes';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
   };
 
   // Сбрасываем поля при переключении между URL и файлом
@@ -74,6 +131,20 @@ export const FileVersionForm = ({ versions, onAdd, onRemove }: FileVersionFormPr
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">Файлы для разных версий</h3>
+      
+      <Alert className="bg-amber-50 border-amber-200 mb-4">
+        <AlertTitle className="text-amber-700">Важно! Подготовьте файл для загрузки</AlertTitle>
+        <AlertDescription className="text-amber-700">
+          <p className="mb-2">Для загрузки файла используйте один из следующих сервисов:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><a href="https://wetransfer.com" target="_blank" rel="noopener noreferrer" className="underline">WeTransfer</a></li>
+            <li><a href="https://files.io" target="_blank" rel="noopener noreferrer" className="underline">Files.io</a></li>
+            <li><a href="https://www.mediafire.com" target="_blank" rel="noopener noreferrer" className="underline">MediaFire</a></li>
+            <li>Или другой файловый хостинг</li>
+          </ul>
+          <p className="mt-2">После загрузки скопируйте прямую ссылку на скачивание файла.</p>
+        </AlertDescription>
+      </Alert>
       
       <div className="grid gap-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -99,13 +170,16 @@ export const FileVersionForm = ({ versions, onAdd, onRemove }: FileVersionFormPr
         
         {useFileUrl ? (
           <div>
-            <Label htmlFor="file-url">URL файла</Label>
+            <Label htmlFor="file-url">URL файла для скачивания</Label>
             <Input
               id="file-url"
-              placeholder="https://example.com/file.zip"
+              placeholder="https://wetransfer.com/downloads/your-file"
               value={fileUrl}
               onChange={(e) => setFileUrl(e.target.value)}
             />
+            <p className="text-sm text-muted-foreground mt-1">
+              Ссылка должна вести напрямую на скачивание файла
+            </p>
           </div>
         ) : (
           <div>

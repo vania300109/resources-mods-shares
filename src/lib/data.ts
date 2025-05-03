@@ -135,13 +135,13 @@ export const createEmptyContent = (type: ContentType = "mod"): ContentItem => ({
   fileVersions: [
     {
       version: "1.19",
-      fileUrl: "#",
+      fileUrl: "https://wetransfer.com/",
       fileName: "example_file_1.19.zip",
       fileSize: "10MB"
     },
     {
       version: "1.20",
-      fileUrl: "#",
+      fileUrl: "https://wetransfer.com/",
       fileName: "example_file_1.20.zip",
       fileSize: "12MB"
     }
@@ -161,19 +161,18 @@ export const SAMPLE_CONTENT = [
     authorId: "author1",
     authorName: "Разработчик",
     minecraftVersions: ["1.19", "1.20"],
-    fileSize: "12.5 MB",
     createdAt: "2025-01-15T10:00:00Z",
     updatedAt: "2025-04-30T15:30:00Z",
     fileVersions: [
       {
         version: "1.19",
-        fileUrl: "#",
+        fileUrl: "https://wetransfer.com/",
         fileName: "example_mod_1.19.jar",
         fileSize: "10MB"
       },
       {
         version: "1.20",
-        fileUrl: "#",
+        fileUrl: "https://wetransfer.com/",
         fileName: "example_mod_1.20.jar",
         fileSize: "12MB"
       }
@@ -205,13 +204,13 @@ export const SAMPLE_ITEMS: ContentItem[] = [
     fileVersions: [
       {
         version: "1.19",
-        fileUrl: "#",
+        fileUrl: "https://wetransfer.com/",
         fileName: "tech_mod_1.19.jar",
         fileSize: "15MB"
       },
       {
         version: "1.20",
-        fileUrl: "#",
+        fileUrl: "https://wetransfer.com/",
         fileName: "tech_mod_1.20.jar",
         fileSize: "16.5MB"
       }
@@ -232,13 +231,13 @@ export const SAMPLE_ITEMS: ContentItem[] = [
     fileVersions: [
       {
         version: "1.19",
-        fileUrl: "#",
+        fileUrl: "https://wetransfer.com/",
         fileName: "medieval_pack_1.19.zip",
         fileSize: "45MB"
       },
       {
         version: "1.20",
-        fileUrl: "#",
+        fileUrl: "https://wetransfer.com/",
         fileName: "medieval_pack_1.20.zip",
         fileSize: "48MB"
       }
@@ -259,13 +258,13 @@ export const SAMPLE_ITEMS: ContentItem[] = [
     fileVersions: [
       {
         version: "1.19",
-        fileUrl: "#",
+        fileUrl: "https://wetransfer.com/",
         fileName: "real_shaders_1.19.zip",
         fileSize: "32MB"
       },
       {
         version: "1.20",
-        fileUrl: "#",
+        fileUrl: "https://wetransfer.com/",
         fileName: "real_shaders_1.20.zip",
         fileSize: "35MB"
       }

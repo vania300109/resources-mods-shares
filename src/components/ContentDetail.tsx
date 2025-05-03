@@ -50,12 +50,9 @@ export default function ContentDetail() {
   const handleDownload = () => {
     if (!fileVersion || !id) return;
     
-    // Имитация скачивания файла
-    const link = document.createElement('a');
-    link.href = fileVersion.fileUrl || '#';
-    link.download = fileVersion.fileName || `file-${fileVersion.version}.zip`;
-    link.target = '_blank';
-    link.click();
+    // Создаем ссылку на файл для скачивания через wetransfer.com
+    // В реальном приложении здесь будет прямая ссылка на файл
+    window.open(fileVersion.fileUrl || 'https://wetransfer.com/', '_blank');
     
     // Увеличиваем счетчик скачиваний
     incrementDownloadCount(id);
