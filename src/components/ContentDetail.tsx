@@ -50,9 +50,8 @@ export default function ContentDetail() {
   const handleDownload = () => {
     if (!fileVersion || !id) return;
     
-    // Создаем ссылку на файл для скачивания через wetransfer.com
-    // В реальном приложении здесь будет прямая ссылка на файл
-    window.open(fileVersion.fileUrl || 'https://wetransfer.com/', '_blank');
+    // Создаем ссылку на файл для скачивания через sendfilesencrypted
+    window.open('https://sendfilesencrypted.com/send-files-online-fast/?lang=ru', '_blank');
     
     // Увеличиваем счетчик скачиваний
     incrementDownloadCount(id);

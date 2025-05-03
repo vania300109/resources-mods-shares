@@ -54,29 +54,20 @@ export const FileVersionForm = ({ versions, onAdd, onRemove }: FileVersionFormPr
       return;
     }
 
-    // Проверяем URL файла для скачивания
+    // Проверяем URL файла для SendFilesEncrypted
     if (useFileUrl && fileUrl) {
-      const validFileHostings = [
-        "wetransfer.com",
-        "files.io",
-        "drive.google.com",
-        "dropbox.com",
-        "mediafire.com",
-        "mega.nz",
-        "yandex.ru/disk",
-        "cloud.mail.ru"
-      ];
+      const validFileHosting = "sendfilesencrypted.com";
 
-      // Проверяем, содержит ли URL один из допустимых хостингов
-      const isValidFileUrl = validFileHostings.some(host => fileUrl.includes(host));
+      // Проверяем, содержит ли URL допустимый хостинг
+      const isValidFileUrl = fileUrl.includes(validFileHosting);
 
       if (!isValidFileUrl) {
         toast({
           title: "Предупреждение",
-          description: "Ссылка должна быть на проверенный файловый хостинг и вести на скачивание файла",
+          description: "Используйте только sendfilesencrypted.com для загрузки файлов",
           variant: "destructive",
         });
-        // Разрешаем продолжить, но с предупреждением
+        return; // Не позволяем добавить версию с неправильным URL
       }
     }
 
@@ -128,21 +119,33 @@ export const FileVersionForm = ({ versions, onAdd, onRemove }: FileVersionFormPr
     }
   };
 
+  // Обрабатываем открытие сервиса в новой вкладке
+  const handleOpenService = () => {
+    window.open('https://sendfilesencrypted.com/send-files-online-fast/?lang=ru', '_blank');
+  };
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">Файлы для разных версий</h3>
       
-      <Alert className="bg-amber-50 border-amber-200 mb-4">
-        <AlertTitle className="text-amber-700">Важно! Подготовьте файл для загрузки</AlertTitle>
-        <AlertDescription className="text-amber-700">
-          <p className="mb-2">Для загрузки файла используйте один из следующих сервисов:</p>
-          <ul className="list-disc pl-5 space-y-1">
-            <li><a href="https://wetransfer.com" target="_blank" rel="noopener noreferrer" className="underline">WeTransfer</a></li>
-            <li><a href="https://files.io" target="_blank" rel="noopener noreferrer" className="underline">Files.io</a></li>
-            <li><a href="https://www.mediafire.com" target="_blank" rel="noopener noreferrer" className="underline">MediaFire</a></li>
-            <li>Или другой файловый хостинг</li>
-          </ul>
-          <p className="mt-2">После загрузки скопируйте прямую ссылку на скачивание файла.</p>
+      <Alert className="bg-blue-50 border-blue-200 mb-4">
+        <AlertTitle className="text-blue-700">Важно! Используйте только SendFilesEncrypted</AlertTitle>
+        <AlertDescription className="text-blue-700">
+          <p className="mb-2">Для загрузки файла используйте только рекомендованный сервис:</p>
+          <Button
+            variant="outline"
+            className="mb-2 border-blue-300 hover:bg-blue-100 text-blue-700"
+            onClick={handleOpenService}
+          >
+            <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            SendFilesEncrypted.com
+          </Button>
+          <p>Загрузите файл на сервис, затем вставьте полученную ссылку в поле ниже.</p>
+          <p className="mt-2 font-medium">Ссылка должна быть только на скачивание файла!</p>
         </AlertDescription>
       </Alert>
       
@@ -173,12 +176,12 @@ export const FileVersionForm = ({ versions, onAdd, onRemove }: FileVersionFormPr
             <Label htmlFor="file-url">URL файла для скачивания</Label>
             <Input
               id="file-url"
-              placeholder="https://wetransfer.com/downloads/your-file"
+              placeholder="https://sendfilesencrypted.com/..."
               value={fileUrl}
               onChange={(e) => setFileUrl(e.target.value)}
             />
             <p className="text-sm text-muted-foreground mt-1">
-              Ссылка должна вести напрямую на скачивание файла
+              Ссылка должна быть с SendFilesEncrypted и вести напрямую на скачивание файла
             </p>
           </div>
         ) : (

@@ -135,13 +135,13 @@ export const createEmptyContent = (type: ContentType = "mod"): ContentItem => ({
   fileVersions: [
     {
       version: "1.19",
-      fileUrl: "https://wetransfer.com/",
+      fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
       fileName: "example_file_1.19.zip",
       fileSize: "10MB"
     },
     {
       version: "1.20",
-      fileUrl: "https://wetransfer.com/",
+      fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
       fileName: "example_file_1.20.zip",
       fileSize: "12MB"
     }
@@ -166,13 +166,13 @@ export const SAMPLE_CONTENT = [
     fileVersions: [
       {
         version: "1.19",
-        fileUrl: "https://wetransfer.com/",
+        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
         fileName: "example_mod_1.19.jar",
         fileSize: "10MB"
       },
       {
         version: "1.20",
-        fileUrl: "https://wetransfer.com/",
+        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
         fileName: "example_mod_1.20.jar",
         fileSize: "12MB"
       }
@@ -204,13 +204,13 @@ export const SAMPLE_ITEMS: ContentItem[] = [
     fileVersions: [
       {
         version: "1.19",
-        fileUrl: "https://wetransfer.com/",
+        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
         fileName: "tech_mod_1.19.jar",
         fileSize: "15MB"
       },
       {
         version: "1.20",
-        fileUrl: "https://wetransfer.com/",
+        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
         fileName: "tech_mod_1.20.jar",
         fileSize: "16.5MB"
       }
@@ -231,13 +231,13 @@ export const SAMPLE_ITEMS: ContentItem[] = [
     fileVersions: [
       {
         version: "1.19",
-        fileUrl: "https://wetransfer.com/",
+        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
         fileName: "medieval_pack_1.19.zip",
         fileSize: "45MB"
       },
       {
         version: "1.20",
-        fileUrl: "https://wetransfer.com/",
+        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
         fileName: "medieval_pack_1.20.zip",
         fileSize: "48MB"
       }
@@ -258,13 +258,13 @@ export const SAMPLE_ITEMS: ContentItem[] = [
     fileVersions: [
       {
         version: "1.19",
-        fileUrl: "https://wetransfer.com/",
+        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
         fileName: "real_shaders_1.19.zip",
         fileSize: "32MB"
       },
       {
         version: "1.20",
-        fileUrl: "https://wetransfer.com/",
+        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
         fileName: "real_shaders_1.20.zip",
         fileSize: "35MB"
       }
