@@ -3,29 +3,70 @@ import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { getContentById } from "@/lib/data";
-import { ContentItem } from "@/lib/types";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { getContentById, incrementDownloadCount } from "@/lib/data";
+import { ContentItem, FileVersion } from "@/lib/types";
 import CommentSection from "@/components/CommentSection";
 
 export default function ContentDetail() {
   const { id } = useParams<{ id: string }>();
   const [content, setContent] = useState<ContentItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedVersion, setSelectedVersion] = useState<string>("");
+  const [fileVersion, setFileVersion] = useState<FileVersion | null>(null);
 
   useEffect(() => {
     if (id) {
       const foundContent = getContentById(id);
       setContent(foundContent || null);
+      
+      // Устанавливаем первую версию по умолчанию, если есть версии файлов
+      if (foundContent?.fileVersions && foundContent.fileVersions.length > 0) {
+        setSelectedVersion(foundContent.fileVersions[0].version);
+        setFileVersion(foundContent.fileVersions[0]);
+      }
+      
       setLoading(false);
     }
   }, [id]);
 
+  useEffect(() => {
+    if (content?.fileVersions && selectedVersion) {
+      const version = content.fileVersions.find(v => v.version === selectedVersion);
+      setFileVersion(version || null);
+    }
+  }, [selectedVersion, content]);
+
+  const handleVersionChange = (value: string) => {
+    setSelectedVersion(value);
+  };
+
   const handleDownload = () => {
-    // Имитация скачивания
-    alert("Скачивание началось!");
+    if (!fileVersion || !id) return;
     
-    // В реальном приложении здесь был бы код для скачивания файла
-    // и увеличения счетчика скачиваний
+    // Имитация скачивания файла
+    const link = document.createElement('a');
+    link.href = fileVersion.fileUrl || '#';
+    link.download = fileVersion.fileName || `file-${fileVersion.version}.zip`;
+    link.target = '_blank';
+    link.click();
+    
+    // Увеличиваем счетчик скачиваний
+    incrementDownloadCount(id);
+    
+    // Обновляем счетчик в UI
+    if (content) {
+      setContent({
+        ...content,
+        downloadCount: content.downloadCount + 1
+      });
+    }
   };
 
   if (loading) {
@@ -68,18 +109,9 @@ export default function ContentDetail() {
           </div>
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <img 
-                  src={content.authorAvatarUrl || "https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=1780"} 
-                  alt={content.authorName}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-                <div>
-                  <p className="font-medium">{content.authorName}</p>
-                  <p className="text-sm text-muted-foreground">Автор</p>
-                </div>
-              </div>
+            <div>
+              <p className="font-medium">{content.authorName}</p>
+              <p className="text-sm text-muted-foreground">Автор</p>
             </div>
 
             <div className="flex items-center space-x-2">
@@ -102,21 +134,42 @@ export default function ContentDetail() {
               )}
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              {content.minecraftVersions?.map((version) => (
-                <Badge key={version} variant="outline">
-                  {version}
-                </Badge>
-              ))}
-            </div>
+            {content.fileVersions && content.fileVersions.length > 0 && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Выберите версию</label>
+                <Select value={selectedVersion} onValueChange={handleVersionChange}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Выберите версию" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {content.fileVersions.map((version) => (
+                      <SelectItem key={version.version} value={version.version}>
+                        {version.version} {version.fileSize && `(${version.fileSize})`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                {fileVersion && (
+                  <div className="text-sm text-muted-foreground">
+                    {fileVersion.fileName && <p>Файл: {fileVersion.fileName}</p>}
+                    {fileVersion.fileSize && <p>Размер: {fileVersion.fileSize}</p>}
+                  </div>
+                )}
+              </div>
+            )}
 
-            <Button className="w-full" onClick={handleDownload}>
+            <Button 
+              className="w-full" 
+              onClick={handleDownload}
+              disabled={!fileVersion}
+            >
               <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="7 10 12 15 17 10" />
                 <line x1="12" y1="15" x2="12" y2="3" />
               </svg>
-              Скачать
+              {fileVersion ? "Скачать" : "Выберите версию для скачивания"}
             </Button>
           </div>
         </div>
@@ -131,6 +184,19 @@ export default function ContentDetail() {
               <p className="whitespace-pre-line">
                 {content.description || "Описание отсутствует"}
               </p>
+              
+              {content.minecraftVersions && content.minecraftVersions.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="font-medium mb-2">Поддерживаемые версии Minecraft</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {content.minecraftVersions.map((version) => (
+                      <Badge key={version} variant="outline">
+                        {version}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
           

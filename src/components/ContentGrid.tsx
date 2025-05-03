@@ -43,13 +43,8 @@ export default function ContentGrid({ items, title, emptyMessage }: ContentGridP
                 </p>
               </CardContent>
               <CardFooter className="p-4 pt-0 flex justify-between items-center">
-                <div className="flex items-center space-x-2">
-                  <img
-                    src={item.authorAvatarUrl || 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=1780'}
-                    alt={item.authorName}
-                    className="w-6 h-6 rounded-full object-cover"
-                  />
-                  <span className="text-xs">{item.authorName}</span>
+                <div className="text-sm">
+                  {item.authorName}
                 </div>
                 <div className="flex items-center space-x-2">
                   {item.averageRating !== undefined && (

@@ -52,7 +52,6 @@ export default function CommentSection({ contentId }: CommentSectionProps) {
       contentId,
       author: authorName,
       authorId: "user-" + Date.now(),
-      authorAvatarUrl: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=2080",
       text: newComment,
       createdAt: new Date().toISOString(),
       rating: rating
@@ -139,17 +138,10 @@ export default function CommentSection({ contentId }: CommentSectionProps) {
             <Card key={comment.id}>
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-3">
-                  <div className="flex items-center space-x-3">
-                    <img
-                      src={comment.authorAvatarUrl || "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=2080"}
-                      alt={comment.author}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                    <div>
-                      <div className="font-medium">{comment.author}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {formatDate(comment.createdAt)}
-                      </div>
+                  <div>
+                    <div className="font-medium">{comment.author}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {formatDate(comment.createdAt)}
                     </div>
                   </div>
                   <div>

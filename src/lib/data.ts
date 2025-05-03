@@ -1,4 +1,4 @@
-import { ContentItem, ContentType, VideoContent, Comment } from "./types";
+import { ContentItem, ContentType, VideoContent, Comment, FileVersion } from "./types";
 
 // Хранилище контента, созданного пользователями
 let userCreatedContent: ContentItem[] = [];
@@ -58,6 +58,29 @@ export function getContentById(id: string): ContentItem | undefined {
   return allContent.find(item => item.id === id);
 }
 
+// Функция для увеличения счетчика скачиваний
+export function incrementDownloadCount(id: string): void {
+  const contentIndex = userCreatedContent.findIndex(item => item.id === id);
+  
+  if (contentIndex !== -1) {
+    userCreatedContent[contentIndex] = {
+      ...userCreatedContent[contentIndex],
+      downloadCount: (userCreatedContent[contentIndex].downloadCount || 0) + 1
+    };
+    
+    localStorage.setItem('userCreatedContent', JSON.stringify(userCreatedContent));
+  }
+  
+  // Также проверяем в примерном контенте
+  const sampleIndex = SAMPLE_ITEMS.findIndex(item => item.id === id);
+  if (sampleIndex !== -1) {
+    SAMPLE_ITEMS[sampleIndex] = {
+      ...SAMPLE_ITEMS[sampleIndex],
+      downloadCount: (SAMPLE_ITEMS[sampleIndex].downloadCount || 0) + 1
+    };
+  }
+}
+
 // Функция для сохранения нового контента
 export function saveNewContent(content: ContentItem): void {
   userCreatedContent = [content, ...userCreatedContent];
@@ -106,10 +129,23 @@ export const createEmptyContent = (type: ContentType = "mod"): ContentItem => ({
   type,
   authorId: "",
   authorName: "",
-  authorAvatarUrl: "",
   minecraftVersions: ["1.19", "1.20"],
   createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString()
+  updatedAt: new Date().toISOString(),
+  fileVersions: [
+    {
+      version: "1.19",
+      fileUrl: "#",
+      fileName: "example_file_1.19.zip",
+      fileSize: "10MB"
+    },
+    {
+      version: "1.20",
+      fileUrl: "#",
+      fileName: "example_file_1.20.zip",
+      fileSize: "12MB"
+    }
+  ]
 });
 
 // Создаем примерный контент для страницы деталей
@@ -124,12 +160,24 @@ export const SAMPLE_CONTENT = [
     type: "mod",
     authorId: "author1",
     authorName: "Разработчик",
-    author: "Разработчик",
-    authorAvatarUrl: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=1780",
     minecraftVersions: ["1.19", "1.20"],
     fileSize: "12.5 MB",
     createdAt: "2025-01-15T10:00:00Z",
     updatedAt: "2025-04-30T15:30:00Z",
+    fileVersions: [
+      {
+        version: "1.19",
+        fileUrl: "#",
+        fileName: "example_mod_1.19.jar",
+        fileSize: "10MB"
+      },
+      {
+        version: "1.20",
+        fileUrl: "#",
+        fileName: "example_mod_1.20.jar",
+        fileSize: "12MB"
+      }
+    ],
     videos: [
       {
         type: "youtube",
@@ -141,7 +189,89 @@ export const SAMPLE_CONTENT = [
 ];
 
 // Пример контента для тестирования
-export const SAMPLE_ITEMS: ContentItem[] = [];
+export const SAMPLE_ITEMS: ContentItem[] = [
+  {
+    id: "sample1",
+    title: "Технологический мод",
+    description: "Добавляет новые механизмы и технологии в игру. Множество новых руд, механизмов и систем автоматизации.",
+    thumbnailUrl: "https://images.unsplash.com/photo-1566837945700-30057527ade0?q=80&w=2070",
+    downloadCount: 2500,
+    type: "mod",
+    authorId: "author1",
+    authorName: "TechDev",
+    minecraftVersions: ["1.19", "1.20"],
+    createdAt: "2025-02-10T10:00:00Z",
+    updatedAt: "2025-04-15T15:30:00Z",
+    fileVersions: [
+      {
+        version: "1.19",
+        fileUrl: "#",
+        fileName: "tech_mod_1.19.jar",
+        fileSize: "15MB"
+      },
+      {
+        version: "1.20",
+        fileUrl: "#",
+        fileName: "tech_mod_1.20.jar",
+        fileSize: "16.5MB"
+      }
+    ]
+  },
+  {
+    id: "sample2",
+    title: "Средневековый ресурс-пак",
+    description: "Преобразует игру в средневековый стиль. Новые текстуры для блоков, предметов и мобов.",
+    thumbnailUrl: "https://images.unsplash.com/photo-1599823336658-8ad1124c90ae?q=80&w=2070",
+    downloadCount: 1800,
+    type: "resource-pack",
+    authorId: "author2",
+    authorName: "MedievalArtist",
+    minecraftVersions: ["1.19", "1.20"],
+    createdAt: "2025-03-05T14:20:00Z",
+    updatedAt: "2025-04-10T09:15:00Z",
+    fileVersions: [
+      {
+        version: "1.19",
+        fileUrl: "#",
+        fileName: "medieval_pack_1.19.zip",
+        fileSize: "45MB"
+      },
+      {
+        version: "1.20",
+        fileUrl: "#",
+        fileName: "medieval_pack_1.20.zip",
+        fileSize: "48MB"
+      }
+    ]
+  },
+  {
+    id: "sample3",
+    title: "Реалистичные шейдеры",
+    description: "Добавляет реалистичное освещение, тени и эффекты воды. Требовательны к производительности!",
+    thumbnailUrl: "https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=2074",
+    downloadCount: 4200,
+    type: "shader",
+    authorId: "author3",
+    authorName: "RealShaders",
+    minecraftVersions: ["1.19", "1.20"],
+    createdAt: "2025-01-20T11:30:00Z",
+    updatedAt: "2025-04-25T16:40:00Z",
+    fileVersions: [
+      {
+        version: "1.19",
+        fileUrl: "#",
+        fileName: "real_shaders_1.19.zip",
+        fileSize: "32MB"
+      },
+      {
+        version: "1.20",
+        fileUrl: "#",
+        fileName: "real_shaders_1.20.zip",
+        fileSize: "35MB"
+      }
+    ]
+  }
+];
 
 // Генерация уникального ID
 export function generateId(): string {
