@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,21 +10,40 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { getContentById, incrementDownloadCount } from "@/lib/data";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { getContentById, incrementDownloadCount, deleteContent, isContentOwner } from "@/lib/data";
 import { ContentItem, FileVersion } from "@/lib/types";
 import CommentSection from "@/components/CommentSection";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function ContentDetail() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [content, setContent] = useState<ContentItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedVersion, setSelectedVersion] = useState<string>("");
   const [fileVersion, setFileVersion] = useState<FileVersion | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
       const foundContent = getContentById(id);
       setContent(foundContent || null);
+      
+      // Проверяем, является ли пользователь владельцем
+      setIsOwner(isContentOwner(id));
       
       // Устанавливаем первую версию по умолчанию, если есть версии файлов
       if (foundContent?.fileVersions && foundContent.fileVersions.length > 0) {
@@ -65,6 +84,28 @@ export default function ContentDetail() {
     }
   };
 
+  const handleDelete = () => {
+    if (!id) return;
+    
+    const success = deleteContent(id);
+    
+    if (success) {
+      toast({
+        title: "Успешно удалено",
+        description: "Материал был успешно удален",
+      });
+      navigate('/'); // Перенаправляем на главную страницу
+    } else {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось удалить материал. У вас может не быть прав на это действие.",
+        variant: "destructive",
+      });
+    }
+    
+    setDeleteDialogOpen(false);
+  };
+
   if (loading) {
     return (
       <div className="container py-12 text-center">
@@ -84,8 +125,8 @@ export default function ContentDetail() {
         <p className="text-muted-foreground mb-6">
           Запрашиваемый материал не существует или был удален.
         </p>
-        <Button variant="outline" onClick={() => window.history.back()}>
-          Вернуться назад
+        <Button variant="outline" onClick={() => navigate('/')}>
+          Вернуться на главную
         </Button>
       </div>
     );
@@ -130,7 +171,7 @@ export default function ContentDetail() {
               )}
             </div>
 
-            {content.fileVersions && content.fileVersions.length > 0 && (
+            {content.fileVersions && content.fileVersions.length > 0 ? (
               <div className="space-y-2">
                 <label className="text-sm font-medium">Выберите версию</label>
                 <Select value={selectedVersion} onValueChange={handleVersionChange}>
@@ -153,6 +194,8 @@ export default function ContentDetail() {
                   </div>
                 )}
               </div>
+            ) : (
+              <p className="text-amber-600 text-sm">Для этого материала не добавлены файлы</p>
             )}
 
             <Button 
@@ -167,6 +210,38 @@ export default function ContentDetail() {
               </svg>
               {fileVersion ? "Скачать" : "Выберите версию для скачивания"}
             </Button>
+            
+            {/* Кнопка удаления (только для владельца) */}
+            {isOwner && (
+              <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" className="w-full">
+                    <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 6h18"></path>
+                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                      <line x1="10" y1="11" x2="10" y2="17"></line>
+                      <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                    Удалить материал
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Это действие нельзя отменить. Материал и все его файлы будут безвозвратно удалены.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Отмена</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Удалить
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
           </div>
         </div>
 

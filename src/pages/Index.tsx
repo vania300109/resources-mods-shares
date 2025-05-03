@@ -1,84 +1,178 @@
 import { useState, useEffect } from "react";
-import { ContentType, SortOption, CONTENT_TYPE_LABELS } from "@/lib/types";
-import CategoryFilter from "@/components/CategoryFilter";
-import Hero from "@/components/Hero";
-import ContentGrid from "@/components/ContentGrid";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { ContentItem, ContentType } from "@/lib/types";
 import { getMockContent } from "@/lib/data";
 
 export default function Index() {
-  // Загрузка сохраненных настроек из localStorage с проверкой на валидность
-  const [selectedCategory, setSelectedCategory] = useState<ContentType>(() => {
-    const saved = localStorage.getItem("selectedCategory");
-    // Проверяем, является ли сохраненное значение допустимой категорией
-    return (saved && CONTENT_TYPE_LABELS[saved as ContentType]) 
-      ? (saved as ContentType) 
-      : "mod";
-  });
+  const [allContent, setAllContent] = useState<ContentItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedType, setSelectedType] = useState<ContentType | "all">("all");
   
-  const [selectedVersion, setSelectedVersion] = useState<string>(() => {
-    const saved = localStorage.getItem("selectedVersion");
-    return saved || "1.19";
-  });
-  
-  const [sortOption, setSortOption] = useState<SortOption>(() => {
-    const saved = localStorage.getItem("sortOption");
-    return (saved === "newest") ? "newest" : "popular";
-  });
-
-  // Получаем контент и отслеживаем его изменения
-  const [content, setContent] = useState(getMockContent());
-  
-  // Обновляем контент при монтировании компонента и при изменении выбранных фильтров
   useEffect(() => {
-    setContent(getMockContent());
-    
-    // Сбрасываем флаг интро для демонстрации
-    localStorage.removeItem("introShown");
+    // Загружаем контент при монтировании
+    loadContent();
   }, []);
-
-  // Сохранение настроек в localStorage
-  useEffect(() => {
-    localStorage.setItem("selectedCategory", selectedCategory);
-    localStorage.setItem("selectedVersion", selectedVersion);
-    localStorage.setItem("sortOption", sortOption);
-  }, [selectedCategory, selectedVersion, sortOption]);
   
-  // Фильтрация контента по выбранной категории
-  const filteredContent = content.filter(item => 
-    selectedCategory === "all" || item.type === selectedCategory
-  );
-
-  const handleCategoryChange = (category: ContentType) => {
-    setSelectedCategory(category);
+  const loadContent = () => {
+    const content = getMockContent();
+    setAllContent(content);
   };
-
+  
+  // Фильтрация контента
+  const filteredContent = allContent.filter(item => {
+    // Фильтр по типу
+    const typeMatches = selectedType === "all" || item.type === selectedType;
+    
+    // Фильтр по поисковому запросу
+    const searchMatches = !searchQuery.trim() || 
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      item.description.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return typeMatches && searchMatches;
+  });
+  
+  // Обработчик поиска
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+  
+  // Обработчик изменения типа
+  const handleTypeChange = (value: string) => {
+    setSelectedType(value as ContentType | "all");
+  };
+  
   return (
-    <div>
-      <Hero />
-      <main>
-        <div className="container py-8">
-          <h2 className="text-2xl font-bold mb-6">Найдите лучший контент для Minecraft</h2>
-          
-          <CategoryFilter 
-            activeCategory={selectedCategory} 
-            onCategoryChange={handleCategoryChange}
-          />
-          
-          <div className="mt-8">
-            <ContentGrid 
-              items={filteredContent}
-              title={
-                sortOption === "newest" 
-                  ? "Новые материалы" 
-                  : "Популярные материалы"
-              }
-              emptyMessage={
-                "В данный момент контент не доступен. Загрузите первым свой контент!"
-              }
-            />
-          </div>
+    <div className="container py-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">Библиотека материалов</h1>
+          <p className="text-muted-foreground">Найдите моды, ресурс-паки, шейдеры и карты</p>
         </div>
-      </main>
+        <Link to="/upload">
+          <Button className="w-full md:w-auto">
+            <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Загрузить материал
+          </Button>
+        </Link>
+      </div>
+      
+      <div className="mb-6">
+        <Input
+          placeholder="Поиск..."
+          value={searchQuery}
+          onChange={handleSearch}
+          className="max-w-md"
+        />
+      </div>
+      
+      <Tabs defaultValue="all" value={selectedType} onValueChange={handleTypeChange} className="mb-8">
+        <TabsList className="mb-4">
+          <TabsTrigger value="all">Все</TabsTrigger>
+          <TabsTrigger value="mod">Моды</TabsTrigger>
+          <TabsTrigger value="resource-pack">Ресурс-паки</TabsTrigger>
+          <TabsTrigger value="shader">Шейдеры</TabsTrigger>
+          <TabsTrigger value="map">Карты</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value={selectedType}>
+          {filteredContent.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredContent.map((item) => (
+                <ContentCard key={item.id} item={item} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <h3 className="text-xl font-semibold mb-2">Материалы не найдены</h3>
+              <p className="text-muted-foreground mb-6">
+                {searchQuery 
+                  ? "Попробуйте изменить поисковый запрос или фильтры" 
+                  : "Будьте первым, кто загрузит материал в этой категории"}
+              </p>
+              <Link to="/upload">
+                <Button>Загрузить материал</Button>
+              </Link>
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
+
+interface ContentCardProps {
+  item: ContentItem;
+}
+
+const ContentCard = ({ item }: ContentCardProps) => {
+  const getTypeLabel = (type: ContentType) => {
+    const labels: Record<ContentType, string> = {
+      "mod": "Мод",
+      "resource-pack": "Ресурс-пак",
+      "shader": "Шейдер",
+      "map": "Карта"
+    };
+    return labels[type] || type;
+  };
+  
+  return (
+    <Card className="overflow-hidden flex flex-col h-full">
+      <div className="aspect-video relative">
+        <img 
+          src={item.thumbnailUrl || "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?q=80&w=2070"} 
+          alt={item.title} 
+          className="w-full h-full object-cover"
+        />
+        <Badge className="absolute top-2 right-2">{getTypeLabel(item.type)}</Badge>
+      </div>
+      <CardHeader className="pb-2">
+        <Link to={`/content/${item.id}`} className="hover:underline">
+          <h3 className="text-xl font-semibold line-clamp-1">{item.title}</h3>
+        </Link>
+        <div className="text-sm text-muted-foreground">
+          {item.authorName} • {new Date(item.createdAt).toLocaleDateString()}
+        </div>
+      </CardHeader>
+      <CardContent className="pb-2 flex-grow">
+        <p className="text-sm line-clamp-3">{item.description}</p>
+      </CardContent>
+      <CardFooter className="justify-between text-sm pt-2">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center">
+            <svg className="mr-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            {item.downloadCount || 0}
+          </div>
+          {item.averageRating && (
+            <div className="flex items-center">
+              <svg className="mr-1 h-4 w-4 text-yellow-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              {item.averageRating.toFixed(1)}
+            </div>
+          )}
+        </div>
+        <Link to={`/content/${item.id}`}>
+          <Button variant="ghost" size="sm">Подробнее</Button>
+        </Link>
+      </CardFooter>
+    </Card>
+  );
+};

@@ -6,6 +6,12 @@ let userCreatedContent: ContentItem[] = [];
 // Хранилище комментариев
 let comments: Comment[] = [];
 
+// Мокап текущего пользователя (в реальном приложении придет из авторизации)
+let currentUser = {
+  id: "user1",
+  name: "Текущий пользователь"
+};
+
 // Инициализация контента из localStorage при загрузке
 try {
   const savedContent = localStorage.getItem('userCreatedContent');
@@ -17,8 +23,22 @@ try {
   if (savedComments) {
     comments = JSON.parse(savedComments);
   }
+  
+  // Загружаем информацию о текущем пользователе
+  const savedUser = localStorage.getItem('currentUser');
+  if (savedUser) {
+    currentUser = JSON.parse(savedUser);
+  } else {
+    // Если нет, сохраняем текущего пользователя
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  }
 } catch (error) {
   console.error('Ошибка при загрузке данных:', error);
+}
+
+// Получение текущего пользователя
+export function getCurrentUser() {
+  return currentUser;
 }
 
 // Функция для получения всего контента
@@ -34,7 +54,7 @@ export function getMockContent(): ContentItem[] {
   }
   
   // Обновляем рейтинги для каждого элемента
-  const contentWithRatings = [...userCreatedContent, ...SAMPLE_ITEMS].map(item => {
+  const contentWithRatings = userCreatedContent.map(item => {
     const itemComments = getCommentsByContentId(item.id);
     const ratings = itemComments.map(comment => comment.rating).filter(rating => rating > 0);
     
@@ -70,15 +90,6 @@ export function incrementDownloadCount(id: string): void {
     
     localStorage.setItem('userCreatedContent', JSON.stringify(userCreatedContent));
   }
-  
-  // Также проверяем в примерном контенте
-  const sampleIndex = SAMPLE_ITEMS.findIndex(item => item.id === id);
-  if (sampleIndex !== -1) {
-    SAMPLE_ITEMS[sampleIndex] = {
-      ...SAMPLE_ITEMS[sampleIndex],
-      downloadCount: (SAMPLE_ITEMS[sampleIndex].downloadCount || 0) + 1
-    };
-  }
 }
 
 // Функция для сохранения нового контента
@@ -91,6 +102,44 @@ export function saveNewContent(content: ContentItem): void {
   } catch (error) {
     console.error('Ошибка при сохранении контента:', error);
   }
+}
+
+// Функция для удаления контента
+export function deleteContent(id: string): boolean {
+  const contentIndex = userCreatedContent.findIndex(item => item.id === id);
+  
+  // Проверяем, существует ли контент
+  if (contentIndex === -1) {
+    return false;
+  }
+  
+  // Проверяем, принадлежит ли контент текущему пользователю
+  if (userCreatedContent[contentIndex].authorId !== currentUser.id) {
+    return false;
+  }
+  
+  // Удаляем контент
+  userCreatedContent = userCreatedContent.filter(item => item.id !== id);
+  
+  // Сохраняем в localStorage
+  try {
+    localStorage.setItem('userCreatedContent', JSON.stringify(userCreatedContent));
+    
+    // Также удаляем все комментарии к этому контенту
+    comments = comments.filter(comment => comment.contentId !== id);
+    localStorage.setItem('comments', JSON.stringify(comments));
+    
+    return true;
+  } catch (error) {
+    console.error('Ошибка при удалении контента:', error);
+    return false;
+  }
+}
+
+// Функция для проверки, является ли пользователь владельцем контента
+export function isContentOwner(contentId: string): boolean {
+  const content = getContentById(contentId);
+  return content ? content.authorId === currentUser.id : false;
 }
 
 // Функции для работы с комментариями
@@ -121,156 +170,19 @@ export function addComment(comment: Comment): void {
 
 // Пустая версия контента, соответствующая интерфейсу ContentItem
 export const createEmptyContent = (type: ContentType = "mod"): ContentItem => ({
-  id: "",
+  id: generateId(),
   title: "",
   description: "",
   thumbnailUrl: "",
   downloadCount: 0,
   type,
-  authorId: "",
-  authorName: "",
+  authorId: currentUser.id,
+  authorName: currentUser.name,
   minecraftVersions: ["1.19", "1.20"],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
-  fileVersions: [
-    {
-      version: "1.19",
-      fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
-      fileName: "example_file_1.19.zip",
-      fileSize: "10MB"
-    },
-    {
-      version: "1.20",
-      fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
-      fileName: "example_file_1.20.zip",
-      fileSize: "12MB"
-    }
-  ]
+  fileVersions: []
 });
-
-// Создаем примерный контент для страницы деталей
-export const SAMPLE_CONTENT = [
-  {
-    id: "1",
-    title: "Пример контента",
-    description: "Это пример контента для тестирования страницы деталей. В реальном приложении здесь будет полное описание.",
-    imageUrl: "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?q=80&w=2070",
-    thumbnailUrl: "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?q=80&w=2070",
-    downloadCount: 1250,
-    type: "mod",
-    authorId: "author1",
-    authorName: "Разработчик",
-    minecraftVersions: ["1.19", "1.20"],
-    createdAt: "2025-01-15T10:00:00Z",
-    updatedAt: "2025-04-30T15:30:00Z",
-    fileVersions: [
-      {
-        version: "1.19",
-        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
-        fileName: "example_mod_1.19.jar",
-        fileSize: "10MB"
-      },
-      {
-        version: "1.20",
-        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
-        fileName: "example_mod_1.20.jar",
-        fileSize: "12MB"
-      }
-    ],
-    videos: [
-      {
-        type: "youtube",
-        url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        title: "Демонстрация работы"
-      }
-    ] as VideoContent[]
-  }
-];
-
-// Пример контента для тестирования
-export const SAMPLE_ITEMS: ContentItem[] = [
-  {
-    id: "sample1",
-    title: "Технологический мод",
-    description: "Добавляет новые механизмы и технологии в игру. Множество новых руд, механизмов и систем автоматизации.",
-    thumbnailUrl: "https://images.unsplash.com/photo-1566837945700-30057527ade0?q=80&w=2070",
-    downloadCount: 2500,
-    type: "mod",
-    authorId: "author1",
-    authorName: "TechDev",
-    minecraftVersions: ["1.19", "1.20"],
-    createdAt: "2025-02-10T10:00:00Z",
-    updatedAt: "2025-04-15T15:30:00Z",
-    fileVersions: [
-      {
-        version: "1.19",
-        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
-        fileName: "tech_mod_1.19.jar",
-        fileSize: "15MB"
-      },
-      {
-        version: "1.20",
-        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
-        fileName: "tech_mod_1.20.jar",
-        fileSize: "16.5MB"
-      }
-    ]
-  },
-  {
-    id: "sample2",
-    title: "Средневековый ресурс-пак",
-    description: "Преобразует игру в средневековый стиль. Новые текстуры для блоков, предметов и мобов.",
-    thumbnailUrl: "https://images.unsplash.com/photo-1599823336658-8ad1124c90ae?q=80&w=2070",
-    downloadCount: 1800,
-    type: "resource-pack",
-    authorId: "author2",
-    authorName: "MedievalArtist",
-    minecraftVersions: ["1.19", "1.20"],
-    createdAt: "2025-03-05T14:20:00Z",
-    updatedAt: "2025-04-10T09:15:00Z",
-    fileVersions: [
-      {
-        version: "1.19",
-        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
-        fileName: "medieval_pack_1.19.zip",
-        fileSize: "45MB"
-      },
-      {
-        version: "1.20",
-        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
-        fileName: "medieval_pack_1.20.zip",
-        fileSize: "48MB"
-      }
-    ]
-  },
-  {
-    id: "sample3",
-    title: "Реалистичные шейдеры",
-    description: "Добавляет реалистичное освещение, тени и эффекты воды. Требовательны к производительности!",
-    thumbnailUrl: "https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=2074",
-    downloadCount: 4200,
-    type: "shader",
-    authorId: "author3",
-    authorName: "RealShaders",
-    minecraftVersions: ["1.19", "1.20"],
-    createdAt: "2025-01-20T11:30:00Z",
-    updatedAt: "2025-04-25T16:40:00Z",
-    fileVersions: [
-      {
-        version: "1.19",
-        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
-        fileName: "real_shaders_1.19.zip",
-        fileSize: "32MB"
-      },
-      {
-        version: "1.20",
-        fileUrl: "https://sendfilesencrypted.com/send-files-online-fast/?lang=ru",
-        fileName: "real_shaders_1.20.zip",
-        fileSize: "35MB"
-      }
-    ]
-  }
-];
 
 // Генерация уникального ID
 export function generateId(): string {
