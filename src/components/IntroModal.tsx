@@ -6,9 +6,6 @@ export default function IntroModal() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // Принудительно показываем интро для демонстрации
-    localStorage.removeItem("introShown");
-    
     // Проверяем, показывали ли мы уже интро
     const introShown = localStorage.getItem("introShown");
     

@@ -6,20 +6,17 @@ import { Form } from "@/components/ui/form";
 import { Upload } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { ContentType, ContentUploaded, FileVersion, ContentItem } from "@/lib/types";
+import { ContentType, ContentUploaded, FileVersion } from "@/lib/types";
 import { formSchema, FormValues } from "./types";
 import { FileVersionForm } from "./FileVersionForm";
 import { MainInfoForm } from "./MainInfoForm";
 import { ThumbnailSection } from "./ThumbnailSection";
-import { saveNewContent } from "@/lib/data";
-import { useNavigate } from "react-router-dom";
 
 export default function UploadForm() {
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [versions, setVersions] = useState<FileVersion[]>([]);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -82,7 +79,6 @@ export default function UploadForm() {
   const onSubmit = (values: FormValues) => {
     if (!validateForm(values)) return;
 
-    // Создаем данные для формы
     const contentData: ContentUploaded = {
       title: values.title,
       description: values.description,
@@ -92,32 +88,6 @@ export default function UploadForm() {
     };
 
     console.log("Отправка данных:", contentData);
-    
-    // Создаем объект контента для сохранения
-    const newContent: ContentItem = {
-      id: Date.now().toString(), // Генерируем уникальный ID
-      title: values.title,
-      description: values.description,
-      thumbnailUrl: thumbnailPreview || "",
-      downloadCount: 0,
-      type: values.type as ContentType,
-      authorId: "current-user",
-      authorName: "Вы",
-      authorAvatarUrl: "",
-      minecraftVersions: versions.map(v => v.version),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      imageUrl: thumbnailPreview || "",
-      fileSize: versions.reduce((size, v) => {
-        if (v.file) {
-          return size + v.file.size / (1024 * 1024);
-        }
-        return size;
-      }, 0).toFixed(2) + " MB",
-    };
-    
-    // Сохраняем контент
-    saveNewContent(newContent);
 
     toast({
       title: "Контент загружен!",
@@ -133,11 +103,6 @@ export default function UploadForm() {
     setThumbnail(null);
     setThumbnailPreview(null);
     setVersions([]);
-    
-    // Перенаправляем на главную страницу
-    setTimeout(() => {
-      navigate('/');
-    }, 1500);
   };
 
   return (

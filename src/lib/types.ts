@@ -27,24 +27,6 @@ export const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
 
 export type SortOption = "popular" | "newest";
 
-export interface Comment {
-  id: string;
-  contentId: string;
-  author: string;
-  authorId: string;
-  text: string;
-  createdAt: string;
-  rating: number; // Рейтинг от 1 до 5
-}
-
-export interface FileVersion {
-  version: string;
-  file?: File;
-  fileUrl?: string;
-  fileName?: string;
-  fileSize?: string;
-}
-
 export interface ContentItem {
   id: string;
   title: string;
@@ -54,12 +36,16 @@ export interface ContentItem {
   type: ContentType;
   authorId: string;
   authorName: string;
+  authorAvatarUrl: string;
   minecraftVersions: string[];
   createdAt: string;
   updatedAt: string;
-  averageRating?: number; // Средний рейтинг материала
-  ratingsCount?: number; // Количество оценок
-  fileVersions?: FileVersion[]; // Добавляем версии файлов
+}
+
+export interface FileVersion {
+  version: string;
+  file?: File;
+  fileUrl?: string;
 }
 
 export interface ContentUploaded {

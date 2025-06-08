@@ -1,164 +1,147 @@
 import { useState } from "react";
+import { FileVersion } from "@/lib/types";
+import { FileVersionFormProps } from "./types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { FileVersion } from "@/lib/types";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
+import { VersionItem } from "./VersionItem";
 
-interface FileVersionFormProps {
-  versions: FileVersion[];
-  onAdd: (version: FileVersion) => void;
-  onRemove: (index: number) => void;
-}
-
-export const FileVersionForm = ({
-  versions,
-  onAdd,
-  onRemove,
-}: FileVersionFormProps) => {
-  const [versionName, setVersionName] = useState("");
+export const FileVersionForm = ({ versions, onAdd, onRemove }: FileVersionFormProps) => {
+  const [version, setVersion] = useState("");
+  const [useFileUrl, setUseFileUrl] = useState(false);
   const [fileUrl, setFileUrl] = useState("");
-  const [fileName, setFileName] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
 
-    if (!versionName.trim() || !fileUrl.trim()) {
+  const handleAdd = () => {
+    if (!version) {
       toast({
         title: "Ошибка",
-        description: "Заполните все обязательные поля",
+        description: "Укажите версию Minecraft",
         variant: "destructive",
       });
       return;
     }
 
-    // Проверяем, не существует ли уже такая версия
-    if (versions.find((v) => v.version === versionName.trim())) {
+    if (useFileUrl && !fileUrl) {
       toast({
         title: "Ошибка",
-        description: "Версия с таким названием уже существует",
+        description: "Укажите URL файла",
         variant: "destructive",
       });
       return;
     }
 
-    // Простая проверка URL
-    try {
-      new URL(fileUrl);
-    } catch {
+    if (!useFileUrl && !file) {
       toast({
         title: "Ошибка",
-        description: "Некорректная ссылка на файл",
+        description: "Выберите файл",
         variant: "destructive",
       });
       return;
     }
 
     const newVersion: FileVersion = {
-      version: versionName.trim(),
-      fileUrl: fileUrl.trim(),
-      fileName: fileName.trim() || undefined,
+      version,
+      ...(useFileUrl ? { fileUrl } : { file: file! }),
     };
 
     onAdd(newVersion);
-
-    // Очищаем форму
-    setVersionName("");
+    setVersion("");
     setFileUrl("");
-    setFileName("");
+    setFile(null);
+  };
 
-    toast({
-      title: "Успешно!",
-      description: "Версия файла добавлена",
-    });
+  // Сбрасываем поля при переключении между URL и файлом
+  const handleToggleFileUrl = (checked: boolean) => {
+    setUseFileUrl(checked);
+    // Сбрасываем соответствующие поля при переключении
+    if (checked) {
+      setFile(null);
+    } else {
+      setFileUrl("");
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Добавить версию файла</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="version-name">Название версии *</Label>
-              <Input
-                id="version-name"
-                placeholder="Например: v1.0, beta-2.1"
-                value={versionName}
-                onChange={(e) => setVersionName(e.target.value)}
-                required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="file-url">Ссылка на файл *</Label>
-              <Input
-                id="file-url"
-                type="url"
-                placeholder="https://example.com/file.zip"
-                value={fileUrl}
-                onChange={(e) => setFileUrl(e.target.value)}
-                required
-              />
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium">Файлы для разных версий</h3>
+      
+      <div className="grid gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="mc-version">Версия Minecraft</Label>
+            <Input
+              id="mc-version"
+              placeholder="Например: 1.19.3"
+              value={version}
+              onChange={(e) => setVersion(e.target.value)}
+            />
+          </div>
+          
+          <div className="flex items-center space-x-2 pt-6">
+            <Switch
+              id="use-url"
+              checked={useFileUrl}
+              onCheckedChange={handleToggleFileUrl}
+            />
+            <Label htmlFor="use-url">{useFileUrl ? "Ссылка на файл" : "Загрузить файл"}</Label>
+          </div>
+        </div>
+        
+        {useFileUrl ? (
+          <div>
+            <Label htmlFor="file-url">URL файла</Label>
+            <Input
+              id="file-url"
+              placeholder="https://example.com/file.zip"
+              value={fileUrl}
+              onChange={(e) => setFileUrl(e.target.value)}
+            />
+          </div>
+        ) : (
+          <div>
+            <Label htmlFor="file-upload">Файл</Label>
+            <Input
+              id="file-upload"
+              type="file"
+              onChange={handleFileChange}
+              // Уберем value для неконтролируемого input file
+              // Сделаем ключ зависимым от file, чтобы сбрасывать поле при очистке
+              key={file ? "file-selected" : "file-empty"}
+            />
+            {file && (
               <p className="text-sm text-muted-foreground mt-1">
-                Загрузите файл на любой файлообменник и вставьте прямую ссылку
-                на скачивание
+                Выбран файл: {file.name} ({(file.size / (1024 * 1024)).toFixed(2)} MB)
               </p>
-            </div>
-
-            <div>
-              <Label htmlFor="file-name">Название файла (необязательно)</Label>
-              <Input
-                id="file-name"
-                placeholder="mod-v1.0.jar"
-                value={fileName}
-                onChange={(e) => setFileName(e.target.value)}
-              />
-            </div>
-
-            <Button type="submit" className="w-full">
-              Добавить версию
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-
+            )}
+          </div>
+        )}
+        
+        <Button type="button" onClick={handleAdd}>
+          Добавить версию
+        </Button>
+      </div>
+      
       {versions.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold mb-3">Добавленные версии</h3>
+        <div className="mt-4">
+          <h4 className="text-sm font-medium mb-2">Добавленные версии:</h4>
           <div className="space-y-2">
-            {versions.map((version, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-3 border rounded-lg"
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline">{version.version}</Badge>
-                    {version.fileName && (
-                      <span className="text-sm text-muted-foreground">
-                        {version.fileName}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1 truncate">
-                    {version.fileUrl}
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onRemove(index)}
-                  className="text-destructive hover:text-destructive-foreground hover:bg-destructive"
-                >
-                  Удалить
-                </Button>
-              </div>
+            {versions.map((v, index) => (
+              <VersionItem 
+                key={index} 
+                version={v} 
+                index={index} 
+                onRemove={onRemove} 
+              />
             ))}
           </div>
         </div>

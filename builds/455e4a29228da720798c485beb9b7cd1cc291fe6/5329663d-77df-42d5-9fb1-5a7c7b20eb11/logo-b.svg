@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .grass { fill: #5dab56; }
+      .dirt { fill: #8b6244; }
+      .pickaxe-handle { fill: #6d5040; }
+      .pickaxe-head { fill: #b0b0b0; }
+      .letter { fill: #fbb040; font-family: Arial, sans-serif; font-weight: bold; }
+    </style>
+  </defs>
+  <!-- Minecraft-style блок -->
+  <g transform="translate(50, 50) scale(0.8)">
+    <!-- Верхняя грань (трава) -->
+    <polygon class="grass" points="0,100 200,0 400,100 200,200"/>
+    <!-- Боковая грань (земля) -->
+    <polygon class="dirt" points="0,100 0,300 200,400 200,200"/>
+    <!-- Правая грань (земля) -->
+    <polygon class="dirt" points="200,200 200,400 400,300 400,100"/>
+  </g>
+  
+  <!-- Кирка (символ майнкрафта) -->
+  <g transform="translate(260, 260) rotate(-45) scale(0.5)">
+    <rect class="pickaxe-handle" x="-140" y="-15" width="140" height="30" rx="5"/>
+    <polygon class="pickaxe-head" points="0,0 50,-50 80,-30 60,0 80,30 50,50"/>
+  </g>
+  
+  <!-- Буква V для Vani -->
+  <text class="letter" x="256" y="400" font-size="80" text-anchor="middle">V</text>
+</svg>
