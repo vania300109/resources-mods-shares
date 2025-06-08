@@ -7,29 +7,36 @@ import { saveNewContent, createEmptyContent, generateId } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { isAuthenticated } from "@/lib/auth";
+import { Navigate } from "react-router-dom";
 
 export default function Upload() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
+  // Проверяем авторизацию
+  if (!isAuthenticated()) {
+    return <Navigate to="/" replace />;
+  }
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [contentType, setContentType] = useState<ContentType>("mod");
   const [minecraftVersions, setMinecraftVersions] = useState<string[]>([]);
   const [fileVersions, setFileVersions] = useState<FileVersion[]>([]);
-  
+
   const handleAddFileVersion = (version: FileVersion) => {
     setFileVersions([...fileVersions, version]);
   };
-  
+
   const handleRemoveFileVersion = (index: number) => {
     setFileVersions(fileVersions.filter((_, i) => i !== index));
   };
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Валидация
     if (!title.trim()) {
       toast({
@@ -39,7 +46,7 @@ export default function Upload() {
       });
       return;
     }
-    
+
     if (!thumbnailUrl) {
       toast({
         title: "Ошибка",
@@ -48,7 +55,7 @@ export default function Upload() {
       });
       return;
     }
-    
+
     if (fileVersions.length === 0) {
       toast({
         title: "Ошибка",
@@ -57,7 +64,7 @@ export default function Upload() {
       });
       return;
     }
-    
+
     if (minecraftVersions.length === 0) {
       toast({
         title: "Ошибка",
@@ -66,7 +73,7 @@ export default function Upload() {
       });
       return;
     }
-    
+
     // Создаем объект контента
     const newContent = {
       ...createEmptyContent(contentType),
@@ -80,30 +87,30 @@ export default function Upload() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    
+
     // Сохраняем контент
     saveNewContent(newContent);
-    
+
     toast({
       title: "Успешно!",
       description: "Ваш контент успешно загружен",
     });
-    
+
     // Перенаправляем на страницу созданного контента
     navigate(`/content/${newContent.id}`);
   };
-  
+
   return (
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-6">Загрузить контент</h1>
-      
+
       <form onSubmit={handleSubmit} className="space-y-8">
         <Card>
           <CardHeader>
             <CardTitle>Основная информация</CardTitle>
           </CardHeader>
           <CardContent>
-            <MainInfoForm 
+            <MainInfoForm
               title={title}
               description={description}
               thumbnailUrl={thumbnailUrl}
@@ -117,7 +124,7 @@ export default function Upload() {
             />
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>Файлы</CardTitle>
@@ -130,9 +137,9 @@ export default function Upload() {
             />
           </CardContent>
         </Card>
-        
+
         <div className="flex justify-end space-x-4">
-          <Button type="button" variant="outline" onClick={() => navigate('/')}>
+          <Button type="button" variant="outline" onClick={() => navigate("/")}>
             Отмена
           </Button>
           <Button type="submit">Опубликовать</Button>
